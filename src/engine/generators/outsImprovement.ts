@@ -56,41 +56,74 @@ function constructDrawScenario(street: 'Flop' | 'Turn'): DrawSetup {
     }
   } else if (drawType === 'oesd') {
     // Open-ended straight draw: 4 consecutive cards
-    const startVal = 4 + Math.floor(Math.random() * 7); // 4-10
+    const suited = Math.random() < 0.5;
+    const startVal = suited
+      ? 4 + Math.floor(Math.random() * 7)   // 4-10: suited connectors are playable
+      : 8 + Math.floor(Math.random() * 3);   // 8-10: filter low unsuited hands
     const suits = shuffle([...SUITS]);
     const r = (v: number) => {
       const entry = Object.entries(RANK_VALUES).find(([, val]) => val === v);
       return (entry?.[0] || '7') as Rank;
     };
-    holeCards = [makeCard(r(startVal), suits[0]), makeCard(r(startVal + 1), suits[1])];
-    communityCards = [
-      makeCard(r(startVal + 2), suits[2]),
-      makeCard(r(startVal + 3), suits[3]),
-      makeCard(randomRank(2, Math.max(2, startVal - 3)), suits[0]),
-    ];
-    if (street === 'Turn') {
-      // Add a low card far from the straight range to keep the draw open
-      const safeRank = randomRank(2, Math.max(2, startVal - 4));
-      communityCards.push(makeCard(safeRank, suits[1]));
+    if (suited) {
+      const holeSuit = suits[0];
+      const offSuits = SUITS.filter(s => s !== holeSuit);
+      const pick = () => offSuits[Math.floor(Math.random() * offSuits.length)];
+      holeCards = [makeCard(r(startVal), holeSuit), makeCard(r(startVal + 1), holeSuit)];
+      communityCards = [
+        makeCard(r(startVal + 2), pick()),
+        makeCard(r(startVal + 3), pick()),
+        makeCard(randomRank(2, Math.max(2, startVal - 3)), pick()),
+      ];
+      if (street === 'Turn') {
+        communityCards.push(makeCard(randomRank(2, Math.max(2, startVal - 4)), pick()));
+      }
+    } else {
+      holeCards = [makeCard(r(startVal), suits[0]), makeCard(r(startVal + 1), suits[1])];
+      communityCards = [
+        makeCard(r(startVal + 2), suits[2]),
+        makeCard(r(startVal + 3), suits[3]),
+        makeCard(randomRank(2, Math.max(2, startVal - 3)), suits[0]),
+      ];
+      if (street === 'Turn') {
+        communityCards.push(makeCard(randomRank(2, Math.max(2, startVal - 4)), suits[1]));
+      }
     }
   } else {
     // Gutshot: missing one card in the middle of a straight
-    const startVal = 4 + Math.floor(Math.random() * 7);
+    const suited = Math.random() < 0.5;
+    const startVal = suited
+      ? 4 + Math.floor(Math.random() * 7)
+      : 8 + Math.floor(Math.random() * 3);
     const suits = shuffle([...SUITS]);
     const r = (v: number) => {
       const entry = Object.entries(RANK_VALUES).find(([, val]) => val === v);
       return (entry?.[0] || '7') as Rank;
     };
     // Skip the middle card (startVal+2)
-    holeCards = [makeCard(r(startVal), suits[0]), makeCard(r(startVal + 1), suits[1])];
-    communityCards = [
-      makeCard(r(startVal + 3), suits[2]),
-      makeCard(r(startVal + 4), suits[3]),
-      makeCard(randomRank(2, Math.max(2, startVal - 3)), suits[0]),
-    ];
-    if (street === 'Turn') {
-      const safeRank = randomRank(2, Math.max(2, startVal - 4));
-      communityCards.push(makeCard(safeRank, suits[1]));
+    if (suited) {
+      const holeSuit = suits[0];
+      const offSuits = SUITS.filter(s => s !== holeSuit);
+      const pick = () => offSuits[Math.floor(Math.random() * offSuits.length)];
+      holeCards = [makeCard(r(startVal), holeSuit), makeCard(r(startVal + 1), holeSuit)];
+      communityCards = [
+        makeCard(r(startVal + 3), pick()),
+        makeCard(r(startVal + 4), pick()),
+        makeCard(randomRank(2, Math.max(2, startVal - 3)), pick()),
+      ];
+      if (street === 'Turn') {
+        communityCards.push(makeCard(randomRank(2, Math.max(2, startVal - 4)), pick()));
+      }
+    } else {
+      holeCards = [makeCard(r(startVal), suits[0]), makeCard(r(startVal + 1), suits[1])];
+      communityCards = [
+        makeCard(r(startVal + 3), suits[2]),
+        makeCard(r(startVal + 4), suits[3]),
+        makeCard(randomRank(2, Math.max(2, startVal - 3)), suits[0]),
+      ];
+      if (street === 'Turn') {
+        communityCards.push(makeCard(randomRank(2, Math.max(2, startVal - 4)), suits[1]));
+      }
     }
   }
 
