@@ -2,8 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { generateHandRankingQuestion } from './handRanking';
 import { generateNutsReadingQuestion } from './nutsReading';
 import { generateOutsImprovementQuestion } from './outsImprovement';
-import { generateBetOrCheckQuestion } from './betOrCheck';
-import { generateFoldCallRaiseQuestion } from './foldCallRaise';
+import { generatePreflopActionQuestion } from './preflopAction';
 import { cardKey } from '../deck';
 import type { Question } from '../../types/quiz';
 
@@ -94,37 +93,29 @@ describe('generateOutsImprovementQuestion', () => {
   });
 });
 
-describe('generateBetOrCheckQuestion', () => {
-  it('produces valid questions across all streets', () => {
-    const streetsSeen = new Set<string>();
+describe('generatePreflopActionQuestion', () => {
+  it('produces valid questions with RFI and facing-raise scenarios', () => {
+    let rfiCount = 0;
+    let facingCount = 0;
     for (let i = 0; i < 50; i++) {
-      const q = generateBetOrCheckQuestion();
+      const q = generatePreflopActionQuestion();
       validateQuestion(q);
       validateNoDuplicateCards(q);
-      validateStreetCards(q);
-      expect(q.category).toBe('betOrCheck');
+      expect(q.category).toBe('preflopAction');
       expect(q.scenario.holeCards).toHaveLength(2);
-      streetsSeen.add(q.scenario.street!);
-    }
-    // With 50 iterations at 30/30/20/20 distribution, extremely unlikely to miss any street
-    expect(streetsSeen.size).toBeGreaterThanOrEqual(2);
-  });
-});
+      expect(q.scenario.communityCards).toHaveLength(0);
+      expect(q.scenario.street).toBe('Preflop');
+      expect(q.scenario.heroStack).toBeGreaterThan(0);
 
-describe('generateFoldCallRaiseQuestion', () => {
-  it('produces valid questions across all streets', () => {
-    const streetsSeen = new Set<string>();
-    for (let i = 0; i < 50; i++) {
-      const q = generateFoldCallRaiseQuestion();
-      validateQuestion(q);
-      validateNoDuplicateCards(q);
-      validateStreetCards(q);
-      expect(q.category).toBe('foldCallRaise');
-      expect(q.scenario.holeCards).toHaveLength(2);
-      expect(q.scenario.potSize).toBeGreaterThan(0);
-      expect(q.scenario.betSize).toBeGreaterThan(0);
-      streetsSeen.add(q.scenario.street!);
+      if (q.scenario.villainStack) {
+        facingCount++;
+        expect(q.scenario.betSize).toBeGreaterThan(0);
+      } else {
+        rfiCount++;
+      }
     }
-    expect(streetsSeen.size).toBeGreaterThanOrEqual(2);
+    // With 50 iterations at 50/50 split, both types should appear
+    expect(rfiCount).toBeGreaterThan(0);
+    expect(facingCount).toBeGreaterThan(0);
   });
 });

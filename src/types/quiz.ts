@@ -4,8 +4,7 @@ export type QuizCategory =
   | 'handRanking'
   | 'nutsReading'
   | 'outsImprovement'
-  | 'betOrCheck'
-  | 'foldCallRaise'
+  | 'preflopAction'
   | 'randomMix';
 
 export interface Option {
@@ -23,6 +22,8 @@ export interface Scenario {
   betSize?: number;
   position?: string;
   street?: string;
+  heroStack?: number;
+  villainStack?: number;
 }
 
 export interface Question {

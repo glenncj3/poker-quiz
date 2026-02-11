@@ -3,13 +3,17 @@ interface GameInfoProps {
   betSize?: number;
   position?: string;
   street?: string;
+  heroStack?: number;
+  villainStack?: number;
 }
 
-export function GameInfo({ potSize, betSize, position, street }: GameInfoProps) {
+export function GameInfo({ potSize, betSize, position, street, heroStack, villainStack }: GameInfoProps) {
   const items: { label: string; value: string }[] = [];
 
   if (street) items.push({ label: 'Street', value: street });
   if (position) items.push({ label: 'Position', value: position });
+  if (heroStack) items.push({ label: 'Your Stack', value: `$${heroStack}` });
+  if (villainStack) items.push({ label: 'Villain', value: `$${villainStack}` });
   if (potSize) items.push({ label: 'Pot', value: `$${potSize}` });
   if (betSize) items.push({ label: 'Bet', value: `$${betSize}` });
 

@@ -26,16 +26,10 @@ const CATEGORY_INFO: { category: QuizCategory; title: string; description: strin
     icon: '🎯',
   },
   {
-    category: 'betOrCheck',
-    title: 'Bet or Check',
-    description: 'Choose the right action based on position and hand strength.',
-    icon: '💰',
-  },
-  {
-    category: 'foldCallRaise',
-    title: 'Fold, Call, or Raise',
-    description: 'Make decisions based on pot odds and hand strength.',
-    icon: '⚖️',
+    category: 'preflopAction',
+    title: 'Preflop Action',
+    description: 'Choose the right preflop action and sizing.',
+    icon: '🃏',
   },
   {
     category: 'randomMix',

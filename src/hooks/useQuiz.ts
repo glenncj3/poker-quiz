@@ -3,19 +3,17 @@ import type { QuizCategory, Question, QuizState } from '../types/quiz';
 import { generateHandRankingQuestion } from '../engine/generators/handRanking';
 import { generateNutsReadingQuestion } from '../engine/generators/nutsReading';
 import { generateOutsImprovementQuestion } from '../engine/generators/outsImprovement';
-import { generateBetOrCheckQuestion } from '../engine/generators/betOrCheck';
-import { generateFoldCallRaiseQuestion } from '../engine/generators/foldCallRaise';
+import { generatePreflopActionQuestion } from '../engine/generators/preflopAction';
 
 const GENERATORS: Record<Exclude<QuizCategory, 'randomMix'>, () => Question> = {
   handRanking: generateHandRankingQuestion,
   nutsReading: generateNutsReadingQuestion,
   outsImprovement: generateOutsImprovementQuestion,
-  betOrCheck: generateBetOrCheckQuestion,
-  foldCallRaise: generateFoldCallRaiseQuestion,
+  preflopAction: generatePreflopActionQuestion,
 };
 
 const CATEGORIES: Exclude<QuizCategory, 'randomMix'>[] = [
-  'handRanking', 'nutsReading', 'outsImprovement', 'betOrCheck', 'foldCallRaise',
+  'handRanking', 'nutsReading', 'outsImprovement', 'preflopAction',
 ];
 
 function generateQuestions(category: QuizCategory, count: number = 10): Question[] {

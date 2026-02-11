@@ -58,6 +58,8 @@ export function QuizScreen({ state, question, onSelectAnswer, onNext, onQuit }: 
             betSize={question.scenario.betSize}
             position={question.scenario.position}
             street={question.scenario.street}
+            heroStack={question.scenario.heroStack}
+            villainStack={question.scenario.villainStack}
           />
 
           <p className="text-sm font-semibold text-center text-gray-100">
