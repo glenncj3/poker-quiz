@@ -15,8 +15,10 @@ export function PokerTable({ communityCards, holeCards, opponentHands }: PokerTa
         style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 70%)' }} />
 
       <div className="relative flex flex-col items-center gap-2">
-        {/* Community cards */}
-        <CardRow cards={communityCards} label="Board" size="sm" />
+        {/* Community cards (hidden on preflop) */}
+        {communityCards.length > 0 && (
+          <CardRow cards={communityCards} label="Board" size="sm" />
+        )}
 
         {/* Opponent hands for hand ranking questions */}
         {opponentHands && opponentHands.length > 0 && (

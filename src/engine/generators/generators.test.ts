@@ -7,6 +7,15 @@ import { generateFoldCallRaiseQuestion } from './foldCallRaise';
 import { cardKey } from '../deck';
 import type { Question } from '../../types/quiz';
 
+const VALID_STREETS = ['Preflop', 'Flop', 'Turn', 'River'];
+
+const COMMUNITY_CARD_COUNTS: Record<string, number> = {
+  Preflop: 0,
+  Flop: 3,
+  Turn: 4,
+  River: 5,
+};
+
 function validateQuestion(q: Question) {
   expect(q.id).toBeTruthy();
   expect(q.questionText).toBeTruthy();
@@ -31,6 +40,13 @@ function validateNoDuplicateCards(q: Question) {
   const keys = allCards.map(cardKey);
   const unique = new Set(keys);
   expect(unique.size).toBe(keys.length);
+}
+
+function validateStreetCards(q: Question) {
+  const street = q.scenario.street;
+  expect(VALID_STREETS).toContain(street);
+  const expectedCC = COMMUNITY_CARD_COUNTS[street!];
+  expect(q.scenario.communityCards).toHaveLength(expectedCC);
 }
 
 describe('generateHandRankingQuestion', () => {
@@ -75,29 +91,36 @@ describe('generateOutsImprovementQuestion', () => {
 });
 
 describe('generateBetOrCheckQuestion', () => {
-  it('produces valid questions repeatedly', () => {
-    for (let i = 0; i < 10; i++) {
+  it('produces valid questions across all streets', () => {
+    const streetsSeen = new Set<string>();
+    for (let i = 0; i < 50; i++) {
       const q = generateBetOrCheckQuestion();
       validateQuestion(q);
       validateNoDuplicateCards(q);
+      validateStreetCards(q);
       expect(q.category).toBe('betOrCheck');
-      expect(q.scenario.communityCards).toHaveLength(5);
       expect(q.scenario.holeCards).toHaveLength(2);
+      streetsSeen.add(q.scenario.street!);
     }
+    // With 50 iterations at 30/30/20/20 distribution, extremely unlikely to miss any street
+    expect(streetsSeen.size).toBeGreaterThanOrEqual(2);
   });
 });
 
 describe('generateFoldCallRaiseQuestion', () => {
-  it('produces valid questions repeatedly', () => {
-    for (let i = 0; i < 10; i++) {
+  it('produces valid questions across all streets', () => {
+    const streetsSeen = new Set<string>();
+    for (let i = 0; i < 50; i++) {
       const q = generateFoldCallRaiseQuestion();
       validateQuestion(q);
       validateNoDuplicateCards(q);
+      validateStreetCards(q);
       expect(q.category).toBe('foldCallRaise');
-      expect(q.scenario.communityCards).toHaveLength(5);
       expect(q.scenario.holeCards).toHaveLength(2);
       expect(q.scenario.potSize).toBeGreaterThan(0);
       expect(q.scenario.betSize).toBeGreaterThan(0);
+      streetsSeen.add(q.scenario.street!);
     }
+    expect(streetsSeen.size).toBeGreaterThanOrEqual(2);
   });
 });
