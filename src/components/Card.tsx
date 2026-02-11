@@ -3,10 +3,11 @@ import type { Card as CardType, Suit } from '../types/card';
 interface CardProps {
   card?: CardType;
   faceDown?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
 }
 
 const SIZE_MAP = {
+  xs: { w: 40, h: 56, fontSize: 10, suitSize: 13 },
   sm: { w: 48, h: 68, fontSize: 12, suitSize: 16 },
   md: { w: 64, h: 90, fontSize: 16, suitSize: 22 },
   lg: { w: 80, h: 112, fontSize: 20, suitSize: 28 },

@@ -47,20 +47,20 @@ const CATEGORY_INFO: { category: QuizCategory; title: string; description: strin
 
 export function CategorySelectScreen({ onSelect, onBack }: CategorySelectScreenProps) {
   return (
-    <div className="min-h-screen bg-dark-bg p-4 sm:p-6">
+    <div className="h-dvh bg-dark-bg p-3 sm:p-4 overflow-y-auto">
       <div className="max-w-lg mx-auto">
         <button
           onClick={onBack}
-          className="text-gray-400 hover:text-gold text-sm mb-4 cursor-pointer transition-colors"
+          className="text-gray-400 hover:text-gold text-xs mb-3 cursor-pointer transition-colors"
         >
           ← Back
         </button>
 
-        <h2 className="text-2xl font-bold text-gold mb-6 text-center">
+        <h2 className="text-xl font-bold text-gold mb-4 text-center">
           Choose a Category
         </h2>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
           {CATEGORY_INFO.map(info => (
             <CategoryCard
               key={info.category}

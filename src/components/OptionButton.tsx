@@ -18,7 +18,7 @@ export function OptionButton({ label, state, onClick, disabled }: OptionButtonPr
     <button
       onClick={onClick}
       disabled={disabled || state === 'disabled'}
-      className={`w-full min-h-[44px] px-4 py-3 rounded-xl border-2 text-left text-sm sm:text-base
+      className={`w-full min-h-[40px] px-3 py-2 rounded-xl border-2 text-left text-sm
         font-medium transition-all duration-200 cursor-pointer
         focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-dark-bg
         ${STATE_CLASSES[state]}`}

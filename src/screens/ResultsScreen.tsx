@@ -28,13 +28,13 @@ export function ResultsScreen({ correct, total, details, onRetry, onCategorySele
   else if (pct >= 50) message = 'Not bad!';
 
   return (
-    <div className="min-h-screen bg-dark-bg p-4 sm:p-6 animate-fade-in">
-      <div className="max-w-lg mx-auto flex flex-col items-center gap-6">
-        <h2 className="text-2xl font-bold text-gold">Quiz Complete</h2>
+    <div className="h-dvh bg-dark-bg p-3 sm:p-4 animate-fade-in overflow-y-auto">
+      <div className="max-w-lg mx-auto flex flex-col items-center gap-4">
+        <h2 className="text-xl font-bold text-gold">Quiz Complete</h2>
 
-        <ScoreRing correct={correct} total={total} />
+        <ScoreRing correct={correct} total={total} size={120} />
 
-        <p className="text-lg text-gray-300">{message} — {pct}%</p>
+        <p className="text-base text-gray-300">{message} — {pct}%</p>
 
         {/* Review List */}
         <div className="w-full flex flex-col gap-2">
@@ -84,14 +84,14 @@ export function ResultsScreen({ correct, total, details, onRetry, onCategorySele
         <div className="w-full flex flex-col gap-2">
           <button
             onClick={onRetry}
-            className="w-full bg-gold text-dark-bg font-bold py-3 rounded-xl
+            className="w-full bg-gold text-dark-bg font-bold py-2.5 rounded-xl
               hover:bg-gold-light active:scale-[0.97] transition-all duration-200 cursor-pointer"
           >
             Try Again
           </button>
           <button
             onClick={onCategorySelect}
-            className="w-full bg-dark-card border-2 border-gray-600 text-gray-200 font-semibold py-3 rounded-xl
+            className="w-full bg-dark-card border-2 border-gray-600 text-gray-200 font-semibold py-2.5 rounded-xl
               hover:border-gold hover:text-gold active:scale-[0.97] transition-all duration-200 cursor-pointer"
           >
             Change Category

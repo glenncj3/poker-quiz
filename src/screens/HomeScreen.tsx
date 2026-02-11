@@ -6,23 +6,23 @@ interface HomeScreenProps {
 
 export function HomeScreen({ onStart }: HomeScreenProps) {
   return (
-    <div className="min-h-screen bg-dark-bg flex flex-col items-center justify-center p-6 animate-fade-in">
-      <div className="flex gap-2 mb-6 animate-scale-in">
-        <Card card={{ rank: 'A', suit: 'spades' }} size="lg" />
-        <Card card={{ rank: 'K', suit: 'hearts' }} size="lg" />
+    <div className="h-dvh bg-dark-bg flex flex-col items-center justify-center p-6 animate-fade-in">
+      <div className="flex gap-2 mb-4 animate-scale-in">
+        <Card card={{ rank: 'A', suit: 'spades' }} size="md" />
+        <Card card={{ rank: 'K', suit: 'hearts' }} size="md" />
       </div>
 
-      <h1 className="text-4xl sm:text-5xl font-bold text-gold mb-3 text-center">
+      <h1 className="text-3xl sm:text-4xl font-bold text-gold mb-2 text-center">
         Poker Trainer
       </h1>
 
-      <p className="text-gray-400 text-center mb-8 max-w-sm">
+      <p className="text-gray-400 text-sm text-center mb-6 max-w-sm">
         Sharpen your Texas Hold'em skills with interactive quizzes on hand reading, outs, and strategy.
       </p>
 
       <button
         onClick={onStart}
-        className="bg-gold text-dark-bg font-bold text-lg px-8 py-4 rounded-xl
+        className="bg-gold text-dark-bg font-bold text-base px-8 py-3 rounded-xl
           hover:bg-gold-light active:scale-[0.97] transition-all duration-200 cursor-pointer
           focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-light"
       >

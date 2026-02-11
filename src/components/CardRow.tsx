@@ -4,7 +4,7 @@ import { Card } from './Card';
 interface CardRowProps {
   cards: CardType[];
   label?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   faceDown?: boolean;
 }
 
@@ -14,7 +14,7 @@ export function CardRow({ cards, label, size = 'md', faceDown = false }: CardRow
       {label && (
         <span className="text-xs text-gray-400 uppercase tracking-wide">{label}</span>
       )}
-      <div className="flex gap-1.5 flex-wrap justify-center">
+      <div className="flex gap-1 justify-center">
         {cards.map((card, i) => (
           <Card key={`${card.rank}_${card.suit}_${i}`} card={card} size={size} faceDown={faceDown} />
         ))}

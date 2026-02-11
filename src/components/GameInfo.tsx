@@ -16,9 +16,9 @@ export function GameInfo({ potSize, betSize, position, street }: GameInfoProps) 
   if (items.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap gap-3 justify-center">
+    <div className="flex flex-wrap gap-2 justify-center">
       {items.map(item => (
-        <div key={item.label} className="bg-dark-card rounded-lg px-3 py-1.5 text-sm">
+        <div key={item.label} className="bg-dark-card rounded-lg px-2 py-1 text-xs">
           <span className="text-gray-400">{item.label}: </span>
           <span className="text-gold font-semibold">{item.value}</span>
         </div>
