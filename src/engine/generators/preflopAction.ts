@@ -4,7 +4,6 @@ import { shuffle } from '../../utils/shuffle';
 import { classifyPreflopHand, handNotation, PreflopTier } from '../preflop';
 
 type HeroPosition = 'UTG' | 'MP' | 'CO' | 'BTN' | 'SB' | 'BB';
-type ScenarioType = 'rfi' | 'facingRaise';
 type ActionId = 'raiseSmall' | 'raiseBig' | 'limp' | 'fold' | 'reraiseSmall' | 'reraiseBig' | 'call';
 
 interface RfiLabels {
@@ -37,19 +36,12 @@ const FACING_LABELS: FacingLabels = {
 
 // Positions available for RFI (BB never RFIs — wins uncontested)
 const RFI_POSITIONS: HeroPosition[] = ['UTG', 'MP', 'CO', 'BTN', 'SB'];
-// BB only appears when facing a raise
-const ALL_POSITIONS: HeroPosition[] = ['UTG', 'MP', 'CO', 'BTN', 'SB', 'BB'];
-
 function isEP(pos: HeroPosition): boolean {
   return pos === 'UTG' || pos === 'MP';
 }
 
 function isLP(pos: HeroPosition): boolean {
   return pos === 'CO' || pos === 'BTN';
-}
-
-function isBlinds(pos: HeroPosition): boolean {
-  return pos === 'SB' || pos === 'BB';
 }
 
 function randomInt(min: number, max: number): number {
@@ -72,7 +64,7 @@ function pickVillainPosition(heroPos: HeroPosition): HeroPosition {
 }
 
 /** Is hero in position relative to villain? */
-function heroIsIP(heroPos: HeroPosition, villainPos: HeroPosition): boolean {
+export function heroIsIP(heroPos: HeroPosition, villainPos: HeroPosition): boolean {
   const order: HeroPosition[] = ['SB', 'BB', 'UTG', 'MP', 'CO', 'BTN'];
   // Postflop position order: SB acts first, BTN acts last
   return order.indexOf(heroPos) > order.indexOf(villainPos);
@@ -80,7 +72,7 @@ function heroIsIP(heroPos: HeroPosition, villainPos: HeroPosition): boolean {
 
 // ── RFI Strategy ──
 
-function getRfiAction(
+export function getRfiAction(
   tier: PreflopTier,
   pos: HeroPosition,
   heroStack: number,
@@ -115,7 +107,7 @@ function getRfiAction(
 
 // ── Facing Raise Strategy ──
 
-function getFacingRaiseAction(
+export function getFacingRaiseAction(
   tier: PreflopTier,
   ip: boolean,
   effectiveStack: number,
