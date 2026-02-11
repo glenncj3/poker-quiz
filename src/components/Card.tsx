@@ -63,22 +63,16 @@ export function Card({ card, faceDown = false, size = 'md' }: CardProps) {
       <rect x="1" y="1" width={w - 2} height={h - 2} rx="6" ry="6"
         fill="#ffffff" stroke="#d0d0d0" strokeWidth="1" />
       {/* Top-left rank */}
-      <text x="6" y={fontSize + 4} fill={color} fontSize={fontSize} fontWeight="bold"
+      <text x={5} y={fontSize + 3} fill={color} fontSize={fontSize} fontWeight="bold"
         fontFamily="system-ui, sans-serif">{card.rank}</text>
-      {/* Top-left suit */}
-      <text x="6" y={fontSize + suitSize + 2} fill={color} fontSize={suitSize * 0.7}
-        fontFamily="system-ui, sans-serif">{symbol}</text>
       {/* Center suit */}
       <text x={w / 2} y={h / 2} textAnchor="middle" dominantBaseline="central"
-        fill={color} fontSize={suitSize * 1.2} fontFamily="system-ui, sans-serif">{symbol}</text>
-      {/* Bottom-right rank (rotated) */}
-      <text x={w - 6} y={h - fontSize - 4} fill={color} fontSize={fontSize} fontWeight="bold"
-        textAnchor="end" fontFamily="system-ui, sans-serif"
-        transform={`rotate(180 ${w - 6} ${h - fontSize - 4 - fontSize / 2 + 4})`}>{card.rank}</text>
-      {/* Bottom-right suit (rotated) */}
-      <text x={w - 6} y={h - 4} fill={color} fontSize={suitSize * 0.7}
-        textAnchor="end" fontFamily="system-ui, sans-serif"
-        transform={`rotate(180 ${w - 6} ${h - 4 - suitSize * 0.35})`}>{symbol}</text>
+        fill={color} fontSize={suitSize * 1.6} fontFamily="system-ui, sans-serif">{symbol}</text>
+      {/* Bottom-right rank (mirrored from top-left) */}
+      <g transform={`rotate(180 ${w / 2} ${h / 2})`}>
+        <text x={5} y={fontSize + 3} fill={color} fontSize={fontSize} fontWeight="bold"
+          fontFamily="system-ui, sans-serif">{card.rank}</text>
+      </g>
     </svg>
   );
 }
