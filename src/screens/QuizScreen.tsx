@@ -64,7 +64,7 @@ export function QuizScreen({ state, question, onSelectAnswer, onNext, onQuit }: 
             {question.questionText}
           </p>
 
-          <div className="flex flex-col gap-1.5" role="group" aria-label="Answer options">
+          <div className="grid grid-cols-2 gap-1.5" role="group" aria-label="Answer options">
             {question.options.map(opt => (
               <OptionButton
                 key={opt.id}
@@ -77,24 +77,28 @@ export function QuizScreen({ state, question, onSelectAnswer, onNext, onQuit }: 
           </div>
         </div>
 
-        {state.showingExplanation && (
-          <>
-            <Explanation
-              isCorrect={isCorrect}
-              text={question.explanation}
-              visible={state.showingExplanation}
-            />
+        <div className="shrink-0 mt-auto flex flex-col gap-2">
+          {state.showingExplanation ? (
+            <>
+              <Explanation
+                isCorrect={isCorrect}
+                text={question.explanation}
+                visible={state.showingExplanation}
+              />
 
-            <button
-              onClick={onNext}
-              className="bg-gold text-dark-bg font-bold py-2.5 rounded-xl animate-slide-up shrink-0
-                hover:bg-gold-light active:scale-[0.97] transition-all duration-200 cursor-pointer
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-light"
-            >
-              {state.currentIndex < state.questions.length - 1 ? 'Next Question' : 'See Results'}
-            </button>
-          </>
-        )}
+              <button
+                onClick={onNext}
+                className="bg-gold text-dark-bg font-bold py-2.5 rounded-xl animate-slide-up shrink-0
+                  hover:bg-gold-light active:scale-[0.97] transition-all duration-200 cursor-pointer
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-light"
+              >
+                {state.currentIndex < state.questions.length - 1 ? 'Next Question' : 'See Results'}
+              </button>
+            </>
+          ) : (
+            <div className="min-h-[120px]" />
+          )}
+        </div>
       </div>
     </div>
   );
