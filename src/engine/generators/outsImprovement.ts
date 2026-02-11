@@ -114,31 +114,25 @@ export function generateOutsImprovementQuestion(): Question {
     if (cardSet.size !== allCards.length) continue;
 
     const outs = findOuts(holeCards, communityCards);
-    if (outs.length === 0) continue;
+    if (outs.length < 4) continue;
 
     // Best out is the correct answer
     const bestOut = outs[0];
 
-    // Find 3 non-improving cards as distractors
-    const usedKeys = new Set(allCards.map(cardKey));
-    const outsKeys = new Set(outs.map(o => cardKey(o.card)));
-    const nonOuts: Card[] = [];
+    // Pick 3 weaker outs as distractors — no shared rank or suit across all 4 options
+    const usedRanks = new Set([bestOut.card.rank]);
+    const usedSuits = new Set([bestOut.card.suit]);
+    const distractorOuts: typeof outs = [];
 
-    for (const suit of SUITS) {
-      for (const rank of RANKS) {
-        const card = makeCard(rank, suit);
-        const key = cardKey(card);
-        if (!usedKeys.has(key) && !outsKeys.has(key)) {
-          nonOuts.push(card);
-        }
-        if (nonOuts.length >= 20) break;
-      }
-      if (nonOuts.length >= 20) break;
+    for (let i = 1; i < outs.length && distractorOuts.length < 3; i++) {
+      const o = outs[i];
+      if (usedRanks.has(o.card.rank) || usedSuits.has(o.card.suit)) continue;
+      distractorOuts.push(o);
+      usedRanks.add(o.card.rank);
+      usedSuits.add(o.card.suit);
     }
 
-    if (nonOuts.length < 3) continue;
-
-    const distractorCards = shuffle(nonOuts).slice(0, 3);
+    if (distractorOuts.length < 3) continue;
 
     const options: Option[] = [
       {
@@ -147,10 +141,10 @@ export function generateOutsImprovementQuestion(): Question {
         cards: [bestOut.card],
         isCorrect: true,
       },
-      ...distractorCards.map((c, i) => ({
+      ...distractorOuts.map((o, i) => ({
         id: `opt_d${i}`,
-        label: `${c.rank}${suitSymbol(c.suit)}`,
-        cards: [c],
+        label: `${o.card.rank}${suitSymbol(o.card.suit)}`,
+        cards: [o.card],
         isCorrect: false,
       })),
     ];
