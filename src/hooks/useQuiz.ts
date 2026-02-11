@@ -65,6 +65,18 @@ function generateQuestions(category: QuizCategory, count: number = 10): Question
     return questions;
   }
 
+  if (category === 'preflopAction') {
+    for (let i = 0; i < 9; i++) {
+      questions.push(generatePreflopActionQuestion({ filtered: true }));
+    }
+    questions.push(generatePreflopActionQuestion({ filtered: false }));
+    for (let i = questions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+    return questions;
+  }
+
   const generator = GENERATORS[category];
   for (let i = 0; i < count; i++) {
     questions.push(generator());

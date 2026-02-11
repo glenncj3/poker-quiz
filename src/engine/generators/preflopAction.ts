@@ -1,4 +1,5 @@
 import type { Question, Option, Scenario } from '../../types/quiz';
+import { RANK_VALUES } from '../../types/card';
 import { createDeck, drawCards, cardKey } from '../deck';
 import { shuffle } from '../../utils/shuffle';
 import { classifyPreflopHand, handNotation, PreflopTier } from '../preflop';
@@ -21,6 +22,16 @@ function isEP(pos: HeroPosition): boolean {
 
 function isLP(pos: HeroPosition): boolean {
   return pos === 'CO' || pos === 'BTN';
+}
+
+function positionFullName(pos: HeroPosition): string {
+  switch (pos) {
+    case 'UTG': return 'early position (UTG)';
+    case 'MP': return 'middle position (MP)';
+    case 'CO': return 'the cutoff (CO)';
+    case 'BTN': return 'the dealer seat (BTN)';
+    case 'SB': return 'the small blind (SB)';
+  }
 }
 
 function randomInt(min: number, max: number): number {
@@ -94,12 +105,12 @@ function buildExplanation(
   let sizing = '';
   if (action === 'betBig') {
     sizing = stack <= 40
-      ? ` With a short stack ($${stack}), shoving is the best play.`
-      : ' A larger raise size builds the pot with your strong holding.';
+      ? ` With only $${stack} in chips, going all-in is the best move.`
+      : ' A bigger bet builds the pot when you have strong cards like these.';
   } else if (action === 'betSmall') {
-    sizing = ` A standard open from ${pg} keeps your range balanced.`;
+    sizing = ` A small bet from ${pg} is a solid play with this hand.`;
   } else if (action === 'call') {
-    sizing = ' Completing from the small blind with a speculative hand is profitable.';
+    sizing = ' Calling from the small blind is worthwhile — your cards have potential to improve.';
   } else if (action === 'fold') {
     sizing = ` This hand is too weak to play from ${pg}.`;
   }
@@ -108,7 +119,8 @@ function buildExplanation(
 
 // ── Main generator ──
 
-export function generatePreflopActionQuestion(): Question {
+export function generatePreflopActionQuestion(options?: { filtered?: boolean }): Question {
+  const filtered = options?.filtered ?? true;
   const maxAttempts = 100;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -117,6 +129,16 @@ export function generatePreflopActionQuestion(): Question {
 
     const cardSet = new Set(holeCards.map(cardKey));
     if (cardSet.size !== 2) continue;
+
+    // Filter out unsuited hands where any card is 7 or lower
+    if (filtered) {
+      const suited = holeCards[0].suit === holeCards[1].suit;
+      if (!suited) {
+        const v0 = RANK_VALUES[holeCards[0].rank];
+        const v1 = RANK_VALUES[holeCards[1].rank];
+        if (v0 <= 7 || v1 <= 7) continue;
+      }
+    }
 
     const tier = classifyPreflopHand(holeCards);
     const notation = handNotation(holeCards);
@@ -139,7 +161,7 @@ export function generatePreflopActionQuestion(): Question {
       heroStack: stack,
     };
 
-    const questionText = `You are in the ${pos} ($${stack} stack). What do you do?`;
+    const questionText = `You are in ${positionFullName(pos)} with $${stack} in chips. What do you do?`;
     const explanation = buildExplanation(notation, tier, pos, stack, action);
 
     return {
