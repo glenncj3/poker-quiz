@@ -81,11 +81,11 @@ export function generateNutsReadingQuestion(options?: { targetRank?: number }): 
     return {
       id: crypto.randomUUID(),
       category: 'nutsReading',
-      questionText: `Which hole cards make the ${rankLabel} possible hand ${streetPhrase}?`,
+      questionText: `Which two cards make the ${rankLabel} possible hand ${streetPhrase}?`,
       scenario: { communityCards: community, street } as Scenario,
       options: shuffle(opts),
       explanation: targetRank === 1
-        ? `The nuts ${streetPhrase} is ${formatHoleCards(correctHand.holeCards)}, making ${correctHand.hand.name}.`
+        ? `The best possible hand ${streetPhrase} is ${formatHoleCards(correctHand.holeCards)}, making ${correctHand.hand.name}.`
         : `The ${rankLabel} hand ${streetPhrase} is ${formatHoleCards(correctHand.holeCards)}, making ${correctHand.hand.name}.`,
     };
   }

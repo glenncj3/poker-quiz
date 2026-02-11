@@ -17,7 +17,7 @@ export function HomeScreen({ onStart }: HomeScreenProps) {
       </h1>
 
       <p className="text-gray-400 text-sm text-center mb-6 max-w-sm">
-        Sharpen your Texas Hold'em skills with interactive quizzes on hand reading, outs, and strategy.
+        Learn Texas Hold'em through interactive quizzes on hand strength, smart betting, and spotting helpful cards.
       </p>
 
       <button

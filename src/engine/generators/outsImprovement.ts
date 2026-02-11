@@ -197,8 +197,8 @@ export function generateOutsImprovementQuestion(street: 'Flop' | 'Turn' = 'Flop'
       questionText: 'Which card would improve your hand the most?',
       scenario,
       options: shuffle(options),
-      explanation: `You have ${outsCount} out${outsCount !== 1 ? 's' : ''}. The ${bestOut.card.rank}${suitSymbol(bestOut.card.suit)} gives you ${bestOut.newHandName}. ` +
-        `Draw type: ${formatDrawType(setup.drawType)}.`,
+      explanation: `There ${outsCount !== 1 ? 'are' : 'is'} ${outsCount} card${outsCount !== 1 ? 's' : ''} in the deck that help you. The ${bestOut.card.rank}${suitSymbol(bestOut.card.suit)} gives you ${bestOut.newHandName}. ` +
+        `${formatDrawType(setup.drawType)}.`,
     };
   }
 
@@ -207,9 +207,9 @@ export function generateOutsImprovementQuestion(street: 'Flop' | 'Turn' = 'Flop'
 
 function formatDrawType(type: DrawType): string {
   switch (type) {
-    case 'flushDraw': return 'Flush Draw';
-    case 'oesd': return 'Open-Ended Straight Draw';
-    case 'gutshot': return 'Gutshot Straight Draw';
+    case 'flushDraw': return 'You need one more card of the same suit to complete a Flush';
+    case 'oesd': return 'You have four cards in a row and need one on either end for a Straight';
+    case 'gutshot': return 'You need one specific card in the middle to complete a Straight';
   }
 }
 

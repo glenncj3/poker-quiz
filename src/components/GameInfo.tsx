@@ -7,13 +7,21 @@ interface GameInfoProps {
   villainStack?: number;
 }
 
+const POSITION_NAMES: Record<string, string> = {
+  UTG: 'Early (UTG)',
+  MP: 'Middle (MP)',
+  CO: 'Cutoff (CO)',
+  BTN: 'Dealer (BTN)',
+  SB: 'Small Blind',
+};
+
 export function GameInfo({ potSize, betSize, position, street, heroStack, villainStack }: GameInfoProps) {
   const items: { label: string; value: string }[] = [];
 
-  if (street) items.push({ label: 'Street', value: street });
-  if (position) items.push({ label: 'Position', value: position });
-  if (heroStack) items.push({ label: 'Your Stack', value: `$${heroStack}` });
-  if (villainStack) items.push({ label: 'Villain', value: `$${villainStack}` });
+  if (street) items.push({ label: 'Round', value: street });
+  if (position) items.push({ label: 'Position', value: POSITION_NAMES[position] || position });
+  if (heroStack) items.push({ label: 'Your Chips', value: `$${heroStack}` });
+  if (villainStack) items.push({ label: 'Opponent', value: `$${villainStack}` });
   if (potSize) items.push({ label: 'Pot', value: `$${potSize}` });
   if (betSize) items.push({ label: 'Bet', value: `$${betSize}` });
 

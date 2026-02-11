@@ -15,20 +15,20 @@ const CATEGORY_INFO: { category: QuizCategory; title: string; description: strin
   },
   {
     category: 'nutsReading',
-    title: 'Nuts Reading',
-    description: 'Find the best possible hand on the board.',
+    title: 'Best Hand',
+    description: 'Figure out which cards make the strongest possible hand.',
     icon: '🔍',
   },
   {
     category: 'outsImprovement',
-    title: 'Outs & Draws',
-    description: 'Identify cards that improve your hand.',
+    title: 'Helping Cards',
+    description: 'Spot the cards that could improve your hand.',
     icon: '🎯',
   },
   {
     category: 'preflopAction',
-    title: 'Preflop Action',
-    description: 'Choose the right preflop action and sizing.',
+    title: 'Before the Flop',
+    description: 'Decide whether to bet, call, or fold before community cards are dealt.',
     icon: '🃏',
   },
   {
