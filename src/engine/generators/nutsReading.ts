@@ -22,6 +22,10 @@ export function generateNutsReadingQuestion(options?: { allowOverlap?: boolean }
     const deck = createDeck();
     const { drawn: community } = drawCards(deck, 5);
 
+    // Skip boards with paired ranks — they make four-of-a-kind the nuts too often
+    const ranks = community.map(c => c.rank);
+    if (new Set(ranks).size !== ranks.length) continue;
+
     const topHands = findTopNHands(community, 8);
     if (topHands.length < 4) continue;
 
