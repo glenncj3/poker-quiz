@@ -30,7 +30,18 @@ export function ResultsScreen({ correct, total, details, onRetry, onCategorySele
   return (
     <div className="h-dvh bg-dark-bg p-3 sm:p-4 animate-fade-in overflow-y-auto">
       <div className="max-w-lg mx-auto flex flex-col items-center gap-4">
-        <h2 className="text-xl font-bold text-gold">Quiz Complete</h2>
+        <div className="flex items-center justify-between w-full">
+          <button
+            onClick={onCategorySelect}
+            className="text-gray-400 hover:text-gold text-xs cursor-pointer transition-colors
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+            aria-label="Go to categories"
+          >
+            ← Categories
+          </button>
+          <h2 className="text-xl font-bold text-gold">Quiz Complete</h2>
+          <span className="text-xs text-transparent select-none">← Categories</span>
+        </div>
 
         <ScoreRing correct={correct} total={total} size={120} />
 
