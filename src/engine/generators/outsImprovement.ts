@@ -133,9 +133,8 @@ function constructDrawScenario(street: 'Flop' | 'Turn'): DrawSetup {
 /**
  * Generate an outs/improvement question: "Which card improves your hand the most?"
  */
-export function generateOutsImprovementQuestion(): Question {
+export function generateOutsImprovementQuestion(street: 'Flop' | 'Turn' = 'Flop'): Question {
   const maxAttempts = 50;
-  const street = Math.random() < 0.7 ? 'Flop' : 'Turn';
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const setup = constructDrawScenario(street);

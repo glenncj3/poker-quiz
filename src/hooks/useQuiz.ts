@@ -46,6 +46,21 @@ function generateQuestions(category: QuizCategory, count: number = 10): Question
     return questions;
   }
 
+  if (category === 'outsImprovement') {
+    for (let i = 0; i < 6; i++) {
+      questions.push(generateOutsImprovementQuestion('Flop'));
+    }
+    for (let i = 0; i < 4; i++) {
+      questions.push(generateOutsImprovementQuestion('Turn'));
+    }
+    // Shuffle the mix
+    for (let i = questions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+    return questions;
+  }
+
   const generator = GENERATORS[category];
   for (let i = 0; i < count; i++) {
     questions.push(generator());
