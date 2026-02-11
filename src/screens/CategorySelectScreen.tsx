@@ -1,0 +1,78 @@
+import type { QuizCategory } from '../types/quiz';
+import { CategoryCard } from '../components/CategoryCard';
+
+interface CategorySelectScreenProps {
+  onSelect: (category: QuizCategory) => void;
+  onBack: () => void;
+}
+
+const CATEGORY_INFO: { category: QuizCategory; title: string; description: string; icon: string }[] = [
+  {
+    category: 'handRanking',
+    title: 'Hand Rankings',
+    description: 'Compare poker hands and pick the winner.',
+    icon: '👑',
+  },
+  {
+    category: 'nutsReading',
+    title: 'Nuts Reading',
+    description: 'Find the best possible hand on the board.',
+    icon: '🔍',
+  },
+  {
+    category: 'outsImprovement',
+    title: 'Outs & Draws',
+    description: 'Identify cards that improve your hand.',
+    icon: '🎯',
+  },
+  {
+    category: 'betOrCheck',
+    title: 'Bet or Check',
+    description: 'Choose the right action based on position and hand strength.',
+    icon: '💰',
+  },
+  {
+    category: 'foldCallRaise',
+    title: 'Fold, Call, or Raise',
+    description: 'Make decisions based on pot odds and hand strength.',
+    icon: '⚖️',
+  },
+  {
+    category: 'randomMix',
+    title: 'Random Mix',
+    description: 'Test all your skills with questions from every category.',
+    icon: '🎲',
+  },
+];
+
+export function CategorySelectScreen({ onSelect, onBack }: CategorySelectScreenProps) {
+  return (
+    <div className="min-h-screen bg-dark-bg p-4 sm:p-6">
+      <div className="max-w-lg mx-auto">
+        <button
+          onClick={onBack}
+          className="text-gray-400 hover:text-gold text-sm mb-4 cursor-pointer transition-colors"
+        >
+          ← Back
+        </button>
+
+        <h2 className="text-2xl font-bold text-gold mb-6 text-center">
+          Choose a Category
+        </h2>
+
+        <div className="grid grid-cols-2 gap-3">
+          {CATEGORY_INFO.map(info => (
+            <CategoryCard
+              key={info.category}
+              category={info.category}
+              title={info.title}
+              description={info.description}
+              icon={info.icon}
+              onClick={() => onSelect(info.category)}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
