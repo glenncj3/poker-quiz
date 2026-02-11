@@ -151,11 +151,11 @@ export function HandRankingsModal({ open, onClose }: HandRankingsModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-center mb-4 relative">
           <h2 className="text-lg font-bold text-gold">Hand Rankings</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white text-lg cursor-pointer transition-colors
+            className="absolute right-0 text-gray-400 hover:text-white text-lg cursor-pointer transition-colors
               focus:outline-none focus-visible:ring-2 focus-visible:ring-gold rounded px-1"
             aria-label="Close"
           >
@@ -166,11 +166,11 @@ export function HandRankingsModal({ open, onClose }: HandRankingsModalProps) {
         {/* Hand list */}
         <div className="flex flex-col gap-3">
           {HAND_EXAMPLES.map((hand, i) => (
-            <div key={hand.name}>
+            <div key={hand.name} className="flex flex-col items-center">
               <p className="text-sm text-gray-300 mb-1">{hand.name}</p>
               <div className="flex gap-1">
                 {hand.cards.map((card, j) => (
-                  <Card key={j} card={card} size="xs" />
+                  <Card key={j} card={card} size="sm" />
                 ))}
               </div>
               {i < HAND_EXAMPLES.length - 1 && (
