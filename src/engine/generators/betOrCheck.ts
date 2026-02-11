@@ -1,6 +1,6 @@
-import type { Card, Suit, Rank } from '../../types/card';
+import type { Card } from '../../types/card';
 import type { Question, Option, Scenario } from '../../types/quiz';
-import { SUITS, RANK_VALUES } from '../../types/card';
+import { RANK_VALUES } from '../../types/card';
 import { createDeck, drawCards, cardKey } from '../deck';
 import { evaluateHand } from '../evaluator';
 import { HandType } from '../../types/card';
@@ -46,8 +46,7 @@ const ARCHETYPES: ArchetypeTemplate[] = [
   },
 ];
 
-const POSITIONS = ['IP', 'OOP'] as const; // In Position, Out of Position
-const BOARD_TEXTURES = ['dry', 'wet'] as const;
+const POSITIONS = ['IP', 'OOP'] as const;
 
 function classifyBoardTexture(community: Card[]): 'dry' | 'wet' {
   // Wet: flush draws or straight draws possible

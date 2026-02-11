@@ -1,5 +1,5 @@
 import type { Card, EvaluatedHand, Rank } from '../types/card';
-import { HandType, RANK_VALUES, HAND_TYPE_NAMES } from '../types/card';
+import { HandType, RANK_VALUES } from '../types/card';
 
 /**
  * Generate all combinations of size k from an array.

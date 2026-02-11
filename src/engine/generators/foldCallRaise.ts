@@ -13,12 +13,6 @@ interface ActionChoice {
   qualifier: string;
 }
 
-const ACTIONS: ActionChoice[] = [
-  { type: 'fold', label: 'Fold', qualifier: 'Your hand is too weak to continue' },
-  { type: 'call', label: 'Call', qualifier: 'You have the right odds to see another card' },
-  { type: 'raise', label: 'Raise', qualifier: 'You have a strong hand and want to build the pot' },
-];
-
 function getCorrectAction(handType: HandType, potOddsPercentage: number): ActionType {
   // Strong hands -> raise
   if (handType >= HandType.ThreeOfAKind) return 'raise';

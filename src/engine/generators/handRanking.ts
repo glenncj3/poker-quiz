@@ -1,6 +1,5 @@
 import type { Card } from '../../types/card';
 import type { Question, Option, Scenario } from '../../types/quiz';
-import { HAND_TYPE_NAMES } from '../../types/card';
 import { createDeck, drawCards, cardKey } from '../deck';
 import { evaluateHand } from '../evaluator';
 import { shuffle } from '../../utils/shuffle';
