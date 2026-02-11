@@ -2,7 +2,6 @@ import type { Card } from '../../types/card';
 import type { Question, Option, Scenario } from '../../types/quiz';
 import { createDeck, drawCards, cardKey } from '../deck';
 import { evaluateHand } from '../evaluator';
-import { shuffle } from '../../utils/shuffle';
 
 /**
  * Generate a hand ranking question: "Which player has the best hand?"
@@ -62,7 +61,7 @@ export function generateHandRankingQuestion(): Question {
       category: 'handRanking',
       questionText: 'Which player has the strongest hand?',
       scenario,
-      options: shuffle(options),
+      options,
       explanation: `${handDescriptions}. ${playerLabels[bestIdx]} wins with ${hands[bestIdx].name}.`,
     };
   }
