@@ -83,11 +83,16 @@ describe('getPreflopAction', () => {
     expect(getPreflopAction(PreflopTier.Steal, 'SB', 40)).toBe('fold');
   });
 
-  it('always folds trash hands', () => {
+  it('folds trash hands except from BB where it checks', () => {
     for (const pos of ALL_POSITIONS) {
-      expect(getPreflopAction(PreflopTier.Trash, pos, 30)).toBe('fold');
-      expect(getPreflopAction(PreflopTier.Trash, pos, 100)).toBe('fold');
-      expect(getPreflopAction(PreflopTier.Trash, pos, 300)).toBe('fold');
+      if (pos === 'BB') {
+        expect(getPreflopAction(PreflopTier.Trash, 'BB', 30)).toBe('call');
+        expect(getPreflopAction(PreflopTier.Trash, 'BB', 100)).toBe('call');
+      } else {
+        expect(getPreflopAction(PreflopTier.Trash, pos, 30)).toBe('fold');
+        expect(getPreflopAction(PreflopTier.Trash, pos, 100)).toBe('fold');
+        expect(getPreflopAction(PreflopTier.Trash, pos, 300)).toBe('fold');
+      }
     }
   });
 });
@@ -146,12 +151,18 @@ describe('generatePreflopActionQuestion', () => {
     }
   });
 
-  it('always has all four option labels', () => {
-    const expectedLabels = new Set(Object.values(ACTION_LABELS));
+  it('always has all four option labels (Check replaces Call for BB)', () => {
     for (let i = 0; i < 20; i++) {
       const q = generatePreflopActionQuestion();
       const labels = new Set(q.options.map(o => o.label));
-      expect(labels).toEqual(expectedLabels);
+      const isBB = q.scenario.position === 'BB';
+      const expected = new Set([
+        ACTION_LABELS.betSmall,
+        ACTION_LABELS.betBig,
+        isBB ? 'Check' : ACTION_LABELS.call,
+        ACTION_LABELS.fold,
+      ]);
+      expect(labels).toEqual(expected);
     }
   });
 

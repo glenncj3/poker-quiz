@@ -45,7 +45,7 @@ function randomStack(): number {
  * MP Open     | fold       | betSmall   | betSmall   | betSmall   | betSmall
  * LP Open     | fold       | fold       | betSmall   | betSmall   | betSmall
  * Steal       | fold       | fold       | BTN:betSm  | call       | betSmall
- * Trash       | fold       | fold       | fold       | fold       | fold
+ * Trash       | fold       | fold       | fold       | fold       | check
  *
  * Short-stack override (≤40 BBs): any non-fold action becomes betBig.
  */
@@ -98,7 +98,8 @@ export function getPreflopAction(
     return 'fold';
   }
 
-  // Trash: always fold
+  // Trash: fold (BB checks instead — handled at quiz level)
+  if (pos === 'BB') return 'call';
   return 'fold';
 }
 
@@ -144,7 +145,11 @@ function buildExplanation(
   } else if (action === 'betSmall') {
     sizing = ` A small raise from ${pg} is a solid play with this hand.`;
   } else if (action === 'call') {
-    sizing = ' Calling from the small blind is worthwhile — your cards have potential to improve.';
+    if (pos === 'BB') {
+      sizing = ' You\'re in the big blind — just check and see a free flop.';
+    } else {
+      sizing = ' Calling from the small blind is worthwhile — your cards have potential to improve.';
+    }
   } else if (action === 'fold') {
     // Use "risky" language for hands that are close to playable from this position
     const isRisky =
@@ -163,7 +168,7 @@ function buildExplanation(
 
 export function generatePreflopActionQuestion(options?: { targetTier?: PreflopTier }): Question {
   const targetTier = options?.targetTier;
-  const maxAttempts = 200;
+  const maxAttempts = 500;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const deck = createDeck();
@@ -181,11 +186,12 @@ export function generatePreflopActionQuestion(options?: { targetTier?: PreflopTi
     const stack = randomStack();
     const action = getPreflopAction(tier, pos, stack);
 
+    const isBB = pos === 'BB';
     const options: Option[] = [
       { id: 'betSmall', label: ACTION_LABELS.betSmall, isCorrect: action === 'betSmall' },
       { id: 'betBig', label: ACTION_LABELS.betBig, isCorrect: action === 'betBig' },
-      { id: 'call', label: ACTION_LABELS.call, isCorrect: action === 'call' },
-      { id: 'fold', label: ACTION_LABELS.fold, isCorrect: action === 'fold' },
+      { id: 'call', label: isBB ? 'Check' : ACTION_LABELS.call, isCorrect: action === 'call' },
+      { id: 'fold', label: ACTION_LABELS.fold, isCorrect: !isBB && action === 'fold', disabled: isBB },
     ];
 
     const scenario: Scenario = {

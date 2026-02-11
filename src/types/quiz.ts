@@ -12,6 +12,7 @@ export interface Option {
   label: string;
   cards?: Card[];
   isCorrect: boolean;
+  disabled?: boolean;
 }
 
 export interface Scenario {

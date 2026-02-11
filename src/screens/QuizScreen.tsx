@@ -21,8 +21,9 @@ export function QuizScreen({ state, question, onSelectAnswer, onNext, onQuit, on
   const isCorrect = selectedOption?.isCorrect ?? false;
 
   function getOptionState(optionId: string): 'default' | 'selected' | 'correct' | 'incorrect' | 'disabled' {
-    if (!state.showingExplanation) return 'default';
     const opt = question.options.find(o => o.id === optionId);
+    if (opt?.disabled) return 'disabled';
+    if (!state.showingExplanation) return 'default';
     if (opt?.isCorrect) return 'correct';
     if (optionId === selectedId) return 'incorrect';
     return 'disabled';
@@ -78,7 +79,7 @@ export function QuizScreen({ state, question, onSelectAnswer, onNext, onQuit, on
                 label={opt.label}
                 state={getOptionState(opt.id)}
                 onClick={() => onSelectAnswer(opt.id)}
-                disabled={state.showingExplanation}
+                disabled={state.showingExplanation || !!opt.disabled}
               />
             ))}
           </div>
