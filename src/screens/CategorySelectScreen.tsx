@@ -1,9 +1,11 @@
 import type { QuizCategory } from '../types/quiz';
 import { CategoryCard } from '../components/CategoryCard';
+import { HandRankingsButton } from '../components/HandRankingsButton';
 
 interface CategorySelectScreenProps {
   onSelect: (category: QuizCategory) => void;
   onBack: () => void;
+  onOpenHandRankings: () => void;
 }
 
 const CATEGORY_INFO: { category: QuizCategory; title: string; description: string; icon: string }[] = [
@@ -39,16 +41,19 @@ const CATEGORY_INFO: { category: QuizCategory; title: string; description: strin
   },
 ];
 
-export function CategorySelectScreen({ onSelect, onBack }: CategorySelectScreenProps) {
+export function CategorySelectScreen({ onSelect, onBack, onOpenHandRankings }: CategorySelectScreenProps) {
   return (
     <div className="h-dvh bg-dark-bg p-3 sm:p-4 overflow-y-auto">
       <div className="max-w-lg mx-auto">
-        <button
-          onClick={onBack}
-          className="text-gray-400 hover:text-gold text-xs mb-3 cursor-pointer transition-colors"
-        >
-          ← Back
-        </button>
+        <div className="flex items-center justify-between mb-3">
+          <button
+            onClick={onBack}
+            className="text-gray-400 hover:text-gold text-xs cursor-pointer transition-colors"
+          >
+            ← Back
+          </button>
+          <HandRankingsButton onClick={onOpenHandRankings} />
+        </div>
 
         <h2 className="text-xl font-bold text-gold mb-4 text-center">
           Choose a Category

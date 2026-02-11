@@ -5,13 +5,18 @@ import { HomeScreen } from './screens/HomeScreen';
 import { CategorySelectScreen } from './screens/CategorySelectScreen';
 import { QuizScreen } from './screens/QuizScreen';
 import { ResultsScreen } from './screens/ResultsScreen';
+import { HandRankingsModal } from './components/HandRankingsModal';
 
 type Screen = 'home' | 'categorySelect' | 'quiz' | 'results';
 
 function App() {
   const [screen, setScreen] = useState<Screen>('home');
   const [lastCategory, setLastCategory] = useState<QuizCategory>('randomMix');
+  const [handRankingsOpen, setHandRankingsOpen] = useState(false);
   const { state, startQuiz, selectAnswer, nextQuestion, getCurrentQuestion, getResults } = useQuiz();
+
+  const openHandRankings = useCallback(() => setHandRankingsOpen(true), []);
+  const closeHandRankings = useCallback(() => setHandRankingsOpen(false), []);
 
   const handleSelectCategory = useCallback((category: QuizCategory) => {
     setLastCategory(category);
@@ -35,41 +40,60 @@ function App() {
 
   const question = getCurrentQuestion();
 
+  const modal = <HandRankingsModal open={handRankingsOpen} onClose={closeHandRankings} />;
+
   switch (screen) {
     case 'home':
-      return <HomeScreen onStart={() => setScreen('categorySelect')} />;
+      return (
+        <>
+          <HomeScreen onStart={() => setScreen('categorySelect')} onOpenHandRankings={openHandRankings} />
+          {modal}
+        </>
+      );
 
     case 'categorySelect':
       return (
-        <CategorySelectScreen
-          onSelect={handleSelectCategory}
-          onBack={() => setScreen('home')}
-        />
+        <>
+          <CategorySelectScreen
+            onSelect={handleSelectCategory}
+            onBack={() => setScreen('home')}
+            onOpenHandRankings={openHandRankings}
+          />
+          {modal}
+        </>
       );
 
     case 'quiz':
       if (!question) return null;
       return (
-        <QuizScreen
-          state={state}
-          question={question}
-          onSelectAnswer={selectAnswer}
-          onNext={handleNext}
-          onQuit={() => setScreen('categorySelect')}
-        />
+        <>
+          <QuizScreen
+            state={state}
+            question={question}
+            onSelectAnswer={selectAnswer}
+            onNext={handleNext}
+            onQuit={() => setScreen('categorySelect')}
+            onOpenHandRankings={openHandRankings}
+          />
+          {modal}
+        </>
       );
 
     case 'results': {
       const results = getResults();
       return (
-        <ResultsScreen
-          correct={results.correct}
-          total={results.total}
-          details={results.details}
-          onRetry={handleRetry}
-          onCategorySelect={() => setScreen('categorySelect')}
-          onHome={() => setScreen('home')}
-        />
+        <>
+          <ResultsScreen
+            correct={results.correct}
+            total={results.total}
+            details={results.details}
+            onRetry={handleRetry}
+            onCategorySelect={() => setScreen('categorySelect')}
+            onHome={() => setScreen('home')}
+            onOpenHandRankings={openHandRankings}
+          />
+          {modal}
+        </>
       );
     }
   }

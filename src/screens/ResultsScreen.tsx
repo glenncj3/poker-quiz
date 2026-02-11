@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ScoreRing } from '../components/ScoreRing';
+import { HandRankingsButton } from '../components/HandRankingsButton';
 import type { Question, Option } from '../types/quiz';
 
 interface ResultDetail {
@@ -16,9 +17,10 @@ interface ResultsScreenProps {
   onRetry: () => void;
   onCategorySelect: () => void;
   onHome: () => void;
+  onOpenHandRankings: () => void;
 }
 
-export function ResultsScreen({ correct, total, details, onRetry, onCategorySelect, onHome }: ResultsScreenProps) {
+export function ResultsScreen({ correct, total, details, onRetry, onCategorySelect, onHome, onOpenHandRankings }: ResultsScreenProps) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
 
@@ -40,7 +42,7 @@ export function ResultsScreen({ correct, total, details, onRetry, onCategorySele
             ← Categories
           </button>
           <h2 className="text-xl font-bold text-gold">Quiz Complete</h2>
-          <span className="text-xs text-transparent select-none">← Categories</span>
+          <HandRankingsButton onClick={onOpenHandRankings} />
         </div>
 
         <ScoreRing correct={correct} total={total} size={120} />

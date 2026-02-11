@@ -4,6 +4,7 @@ import { GameInfo } from '../components/GameInfo';
 import { OptionButton } from '../components/OptionButton';
 import { Explanation } from '../components/Explanation';
 import { ProgressBar } from '../components/ProgressBar';
+import { HandRankingsButton } from '../components/HandRankingsButton';
 
 interface QuizScreenProps {
   state: QuizState;
@@ -11,9 +12,10 @@ interface QuizScreenProps {
   onSelectAnswer: (optionId: string) => void;
   onNext: () => void;
   onQuit: () => void;
+  onOpenHandRankings: () => void;
 }
 
-export function QuizScreen({ state, question, onSelectAnswer, onNext, onQuit }: QuizScreenProps) {
+export function QuizScreen({ state, question, onSelectAnswer, onNext, onQuit, onOpenHandRankings }: QuizScreenProps) {
   const selectedId = state.answers[question.id];
   const selectedOption = question.options.find(o => o.id === selectedId);
   const isCorrect = selectedOption?.isCorrect ?? false;
@@ -38,9 +40,12 @@ export function QuizScreen({ state, question, onSelectAnswer, onNext, onQuit }: 
           >
             ← Quit
           </button>
-          <span className="text-xs text-gray-400">
-            {state.currentIndex + 1}/{state.questions.length}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-gray-400">
+              {state.currentIndex + 1}/{state.questions.length}
+            </span>
+            <HandRankingsButton onClick={onOpenHandRankings} />
+          </div>
         </div>
 
         <ProgressBar current={state.currentIndex} total={state.questions.length} />
