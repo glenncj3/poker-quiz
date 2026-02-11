@@ -27,7 +27,7 @@ export function findOuts(holeCards: Card[], communityCards: Card[]): OutCard[] {
       const newCommunity = [...communityCards, card];
       const newHand = evaluateHand(holeCards, newCommunity);
 
-      if (newHand.score > currentHand.score) {
+      if (newHand.type > currentHand.type) {
         outs.push({
           card,
           improvementDelta: newHand.score - currentHand.score,
