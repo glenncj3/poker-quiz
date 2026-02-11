@@ -14,20 +14,29 @@ interface ResultsScreenProps {
   correct: number;
   total: number;
   details: ResultDetail[];
+  isStreak?: boolean;
   onRetry: () => void;
   onCategorySelect: () => void;
   onHome: () => void;
   onOpenHandRankings: () => void;
 }
 
-export function ResultsScreen({ correct, total, details, onRetry, onCategorySelect, onHome, onOpenHandRankings }: ResultsScreenProps) {
+export function ResultsScreen({ correct, total, details, isStreak, onRetry, onCategorySelect, onHome, onOpenHandRankings }: ResultsScreenProps) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
 
-  let message = 'Keep practicing!';
-  if (pct >= 90) message = 'Outstanding!';
-  else if (pct >= 70) message = 'Great job!';
-  else if (pct >= 50) message = 'Not bad!';
+  let message: string;
+  if (isStreak) {
+    if (correct >= 10) message = 'Outstanding!';
+    else if (correct >= 6) message = 'Great run!';
+    else if (correct >= 3) message = 'Not bad!';
+    else message = 'Keep practicing!';
+  } else {
+    message = 'Keep practicing!';
+    if (pct >= 90) message = 'Outstanding!';
+    else if (pct >= 70) message = 'Great job!';
+    else if (pct >= 50) message = 'Not bad!';
+  }
 
   return (
     <div className="h-dvh bg-dark-bg p-3 sm:p-4 animate-fade-in overflow-y-auto">
@@ -43,13 +52,15 @@ export function ResultsScreen({ correct, total, details, onRetry, onCategorySele
           >
             ← Categories
           </button>
-          <h2 className="text-xl font-bold text-gold">Quiz Complete</h2>
+          <h2 className="text-xl font-bold text-gold">{isStreak ? 'Game Over' : 'Quiz Complete'}</h2>
           <HandRankingsButton onClick={onOpenHandRankings} />
         </div>
 
-        <ScoreRing correct={correct} total={total} size={120} />
+        <ScoreRing correct={correct} total={total} size={120} isStreak={isStreak} />
 
-        <p className="text-base text-gray-300">{message} — {pct}%</p>
+        <p className="text-base text-gray-300">
+          {isStreak ? message : `${message} — ${pct}%`}
+        </p>
 
         {/* Review List */}
         <div className="w-full flex flex-col gap-2">

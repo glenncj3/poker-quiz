@@ -9,13 +9,14 @@ import { HandRankingsButton } from '../components/HandRankingsButton';
 interface QuizScreenProps {
   state: QuizState;
   question: Question;
+  isStreak?: boolean;
   onSelectAnswer: (optionId: string) => void;
   onNext: () => void;
   onQuit: () => void;
   onOpenHandRankings: () => void;
 }
 
-export function QuizScreen({ state, question, onSelectAnswer, onNext, onQuit, onOpenHandRankings }: QuizScreenProps) {
+export function QuizScreen({ state, question, isStreak, onSelectAnswer, onNext, onQuit, onOpenHandRankings }: QuizScreenProps) {
   const selectedId = state.answers[question.id];
   const selectedOption = question.options.find(o => o.id === selectedId);
   const isCorrect = selectedOption?.isCorrect ?? false;
@@ -45,13 +46,15 @@ export function QuizScreen({ state, question, onSelectAnswer, onNext, onQuit, on
           </button>
           <div className="flex items-center gap-3">
             <span className="text-xs text-gray-400">
-              {state.currentIndex + 1}/{state.questions.length}
+              {isStreak
+                ? `Streak: ${state.currentIndex}`
+                : `${state.currentIndex + 1}/${state.questions.length}`}
             </span>
             <HandRankingsButton onClick={onOpenHandRankings} />
           </div>
         </div>
 
-        <ProgressBar current={state.currentIndex} total={state.questions.length} />
+        {!isStreak && <ProgressBar current={state.currentIndex} total={state.questions.length} />}
 
         {/* Key forces re-mount + animation on question change */}
         <div key={question.id} className="flex flex-col gap-2 animate-scale-in flex-1 min-h-0">
@@ -102,7 +105,9 @@ export function QuizScreen({ state, question, onSelectAnswer, onNext, onQuit, on
                   hover:bg-gold-light active:scale-[0.97] transition-all duration-200 cursor-pointer
                   focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-light"
               >
-                {state.currentIndex < state.questions.length - 1 ? 'Next Question' : 'See Results'}
+                {isStreak
+                  ? (isCorrect ? 'Next Question' : 'Game Over — See Results')
+                  : (state.currentIndex < state.questions.length - 1 ? 'Next Question' : 'See Results')}
               </button>
             </>
           ) : (

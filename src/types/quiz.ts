@@ -37,6 +37,7 @@ export interface Question {
 }
 
 export interface QuizState {
+  category: QuizCategory;
   questions: Question[];
   currentIndex: number;
   answers: Record<string, string>; // questionId -> selectedOptionId

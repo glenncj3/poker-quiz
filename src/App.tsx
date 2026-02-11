@@ -25,13 +25,24 @@ function App() {
   }, [startQuiz]);
 
   const handleNext = useCallback(() => {
+    if (lastCategory === 'randomMix') {
+      const currentQ = state.questions[state.currentIndex];
+      const selectedId = currentQ ? state.answers[currentQ.id] : undefined;
+      const wasCorrect = currentQ?.options.find(o => o.id === selectedId)?.isCorrect ?? false;
+      nextQuestion();
+      if (!wasCorrect) {
+        setScreen('results');
+      }
+      return;
+    }
+
     if (state.currentIndex >= state.questions.length - 1) {
       nextQuestion();
       setScreen('results');
     } else {
       nextQuestion();
     }
-  }, [nextQuestion, state.currentIndex, state.questions.length]);
+  }, [nextQuestion, state.currentIndex, state.questions, state.answers, lastCategory]);
 
   const handleRetry = useCallback(() => {
     startQuiz(lastCategory);
@@ -65,6 +76,7 @@ function App() {
           <QuizScreen
             state={state}
             question={question}
+            isStreak={lastCategory === 'randomMix'}
             onSelectAnswer={selectAnswer}
             onNext={handleNext}
             onQuit={() => setScreen('categorySelect')}
@@ -82,6 +94,7 @@ function App() {
             correct={results.correct}
             total={results.total}
             details={results.details}
+            isStreak={lastCategory === 'randomMix'}
             onRetry={handleRetry}
             onCategorySelect={() => setScreen('categorySelect')}
             onHome={() => setScreen('home')}

@@ -93,8 +93,14 @@ function generateQuestions(category: QuizCategory, count: number = 10): Question
   return questions;
 }
 
+function generateOneRandom(): Question {
+  const cat = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
+  return GENERATORS[cat]();
+}
+
 export function useQuiz() {
   const [state, setState] = useState<QuizState>({
+    category: 'randomMix',
     questions: [],
     currentIndex: 0,
     answers: {},
@@ -103,8 +109,20 @@ export function useQuiz() {
   });
 
   const startQuiz = useCallback((category: QuizCategory) => {
+    if (category === 'randomMix') {
+      setState({
+        category,
+        questions: [generateOneRandom()],
+        currentIndex: 0,
+        answers: {},
+        showingExplanation: false,
+        completed: false,
+      });
+      return;
+    }
     const questions = generateQuestions(category);
     setState({
+      category,
       questions,
       currentIndex: 0,
       answers: {},
@@ -128,6 +146,24 @@ export function useQuiz() {
 
   const nextQuestion = useCallback(() => {
     setState(prev => {
+      if (prev.category === 'randomMix') {
+        const currentQ = prev.questions[prev.currentIndex];
+        const selectedId = currentQ ? prev.answers[currentQ.id] : undefined;
+        const wasCorrect = currentQ?.options.find(o => o.id === selectedId)?.isCorrect ?? false;
+
+        if (!wasCorrect) {
+          return { ...prev, completed: true, showingExplanation: false };
+        }
+        // Correct: generate a new random question and advance
+        const newQuestion = generateOneRandom();
+        return {
+          ...prev,
+          questions: [...prev.questions, newQuestion],
+          currentIndex: prev.currentIndex + 1,
+          showingExplanation: false,
+        };
+      }
+
       const nextIndex = prev.currentIndex + 1;
       if (nextIndex >= prev.questions.length) {
         return { ...prev, completed: true, showingExplanation: false };

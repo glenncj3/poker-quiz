@@ -35,8 +35,8 @@ const CATEGORY_INFO: { category: QuizCategory; title: string; description: strin
   },
   {
     category: 'randomMix',
-    title: 'Random Mix',
-    description: 'Test all your skills with questions from every category.',
+    title: 'Endless Random',
+    description: 'Answer questions until you miss. How long can you last?',
     icon: '🎲',
   },
 ];
@@ -62,7 +62,7 @@ export function CategorySelectScreen({ onSelect, onBack, onOpenHandRankings }: C
         </h2>
 
         <div className="grid grid-cols-2 gap-2">
-          {CATEGORY_INFO.map(info => (
+          {CATEGORY_INFO.slice(0, 4).map(info => (
             <CategoryCard
               key={info.category}
               category={info.category}
@@ -72,6 +72,16 @@ export function CategorySelectScreen({ onSelect, onBack, onOpenHandRankings }: C
               onClick={() => onSelect(info.category)}
             />
           ))}
+        </div>
+
+        <div className="flex justify-center mt-2">
+          <CategoryCard
+            category={CATEGORY_INFO[4].category}
+            title={CATEGORY_INFO[4].title}
+            description={CATEGORY_INFO[4].description}
+            icon={CATEGORY_INFO[4].icon}
+            onClick={() => onSelect(CATEGORY_INFO[4].category)}
+          />
         </div>
       </div>
     </div>
