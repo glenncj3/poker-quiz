@@ -4,7 +4,7 @@ import { createDeck, drawCards, cardKey } from '../deck';
 import { shuffle } from '../../utils/shuffle';
 import { classifyPreflopHand, handNotation, PreflopTier } from '../preflop';
 
-type HeroPosition = 'UTG' | 'MP' | 'CO' | 'BTN' | 'SB';
+type HeroPosition = 'UTG' | 'MP' | 'CO' | 'BTN' | 'SB' | 'BB';
 export type ActionId = 'betSmall' | 'betBig' | 'call' | 'fold';
 
 export const ACTION_LABELS: Record<ActionId, string> = {
@@ -14,15 +14,7 @@ export const ACTION_LABELS: Record<ActionId, string> = {
   fold: 'Fold',
 };
 
-const POSITIONS: HeroPosition[] = ['UTG', 'MP', 'CO', 'BTN', 'SB'];
-
-function isEP(pos: HeroPosition): boolean {
-  return pos === 'UTG' || pos === 'MP';
-}
-
-function isLP(pos: HeroPosition): boolean {
-  return pos === 'CO' || pos === 'BTN';
-}
+const POSITIONS: HeroPosition[] = ['UTG', 'MP', 'CO', 'BTN', 'SB', 'BB'];
 
 function positionFullName(pos: HeroPosition): string {
   switch (pos) {
@@ -31,6 +23,7 @@ function positionFullName(pos: HeroPosition): string {
     case 'CO': return 'the cutoff (CO)';
     case 'BTN': return 'the dealer seat (BTN)';
     case 'SB': return 'the small blind (SB)';
+    case 'BB': return 'the big blind (BB)';
   }
 }
 
@@ -42,6 +35,21 @@ function randomStack(): number {
   return randomInt(6, 60) * 5;
 }
 
+/*
+ * Decision matrix (7 tiers × 6 positions):
+ *
+ * Tier        | UTG        | MP         | CO/BTN     | SB         | BB
+ * ------------|------------|------------|------------|------------|------------
+ * Premium     | betBig     | betBig     | betBig     | betBig     | betBig
+ * Strong      | betBig     | betBig     | betSmall   | betBig     | betBig
+ * UTG Open    | betSmall   | betSmall   | betSmall   | betSmall   | betSmall
+ * MP Open     | fold       | betSmall   | betSmall   | betSmall   | betSmall
+ * LP Open     | fold       | fold       | betSmall   | betSmall   | betSmall
+ * Steal       | fold       | fold       | BTN:betSm  | call       | betSmall
+ * Trash       | fold       | fold       | fold       | fold       | fold
+ *
+ * Short-stack override (≤40 BBs): any non-fold action becomes betBig.
+ */
 export function getPreflopAction(
   tier: PreflopTier,
   pos: HeroPosition,
@@ -49,30 +57,50 @@ export function getPreflopAction(
 ): ActionId {
   const shortStack = stack <= 40;
 
+  // Premium: always bet big
   if (tier === PreflopTier.Premium) {
     return 'betBig';
   }
 
+  // Strong: raise from everywhere; big from EP/SB/BB, small from CO/BTN
   if (tier === PreflopTier.Strong) {
     if (shortStack) return 'betBig';
-    if (isLP(pos)) return 'betSmall';
-    return 'betBig'; // EP or SB
+    if (pos === 'CO' || pos === 'BTN') return 'betSmall';
+    return 'betBig';
   }
 
-  if (tier === PreflopTier.Playable) {
-    if (isEP(pos)) return 'fold';
+  // UTG Open: raise small from all positions
+  if (tier === PreflopTier.UTGOpen) {
     if (shortStack) return 'betBig';
-    return 'betSmall'; // CO, BTN, SB
+    return 'betSmall';
   }
 
-  if (tier === PreflopTier.Marginal) {
-    if (shortStack) return 'fold';
-    if (pos === 'SB') return 'call';
-    if (pos === 'BTN') return 'betSmall';
+  // MP Open: fold from UTG, raise from MP+
+  if (tier === PreflopTier.MPOpen) {
+    if (pos === 'UTG') return 'fold';
+    if (shortStack) return 'betBig';
+    return 'betSmall';
+  }
+
+  // LP Open: fold from UTG/MP, raise from CO+
+  if (tier === PreflopTier.LPOpen) {
+    if (pos === 'UTG' || pos === 'MP') return 'fold';
+    if (shortStack) return 'betBig';
+    return 'betSmall';
+  }
+
+  // Steal: BTN raise, SB call, BB raise, fold elsewhere
+  if (tier === PreflopTier.Steal) {
+    if (pos === 'SB') return shortStack ? 'fold' : 'call';
+    if (pos === 'BTN' || pos === 'BB') {
+      if (shortStack) return 'betBig';
+      return 'betSmall';
+    }
     return 'fold';
   }
 
-  return 'fold'; // Weak
+  // Trash: always fold
+  return 'fold';
 }
 
 // ── Explanation helpers ──
@@ -81,16 +109,23 @@ function tierName(tier: PreflopTier): string {
   switch (tier) {
     case PreflopTier.Premium: return 'premium';
     case PreflopTier.Strong: return 'strong';
-    case PreflopTier.Playable: return 'playable';
-    case PreflopTier.Marginal: return 'marginal';
+    case PreflopTier.UTGOpen: return 'solid';
+    case PreflopTier.MPOpen: return 'playable';
+    case PreflopTier.LPOpen: return 'speculative';
+    case PreflopTier.Steal: return 'marginal';
     default: return 'weak';
   }
 }
 
 function positionGroup(pos: HeroPosition): string {
-  if (isEP(pos)) return 'early position';
-  if (isLP(pos)) return 'late position';
-  return 'the small blind';
+  switch (pos) {
+    case 'UTG': return 'early position';
+    case 'MP': return 'middle position';
+    case 'CO': return 'the cutoff';
+    case 'BTN': return 'the button';
+    case 'SB': return 'the small blind';
+    case 'BB': return 'the big blind';
+  }
 }
 
 function buildExplanation(
@@ -108,11 +143,19 @@ function buildExplanation(
       ? ` With only $${stack} in chips, going all-in is the best move.`
       : ' A bigger bet builds the pot when you have strong cards like these.';
   } else if (action === 'betSmall') {
-    sizing = ` A small bet from ${pg} is a solid play with this hand.`;
+    sizing = ` A small raise from ${pg} is a solid play with this hand.`;
   } else if (action === 'call') {
     sizing = ' Calling from the small blind is worthwhile — your cards have potential to improve.';
   } else if (action === 'fold') {
-    sizing = ` This hand is too weak to play from ${pg}.`;
+    // Use "risky" language for hands that are close to playable from this position
+    const isRisky =
+      (tier === PreflopTier.MPOpen && pos === 'UTG') ||
+      (tier === PreflopTier.LPOpen && (pos === 'UTG' || pos === 'MP'));
+    if (isRisky) {
+      sizing = ` This hand is risky from ${pg} — it plays better from later positions.`;
+    } else {
+      sizing = ` This hand is too weak to play from ${pg}.`;
+    }
   }
   return `${notation} is a ${tn} hand.${sizing}`;
 }

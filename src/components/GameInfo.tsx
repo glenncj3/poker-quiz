@@ -13,6 +13,7 @@ const POSITION_NAMES: Record<string, string> = {
   CO: 'Cutoff (CO)',
   BTN: 'Dealer (BTN)',
   SB: 'Small Blind',
+  BB: 'Big Blind',
 };
 
 export function GameInfo({ potSize, betSize, position, street, heroStack, villainStack }: GameInfoProps) {

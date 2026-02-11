@@ -10,9 +10,10 @@ import { cardKey } from '../deck';
 // ── getPreflopAction ──
 
 describe('getPreflopAction', () => {
+  const ALL_POSITIONS = ['UTG', 'MP', 'CO', 'BTN', 'SB', 'BB'] as const;
+
   it('always bets big with premium hands regardless of position or stack', () => {
-    const positions = ['UTG', 'MP', 'CO', 'BTN', 'SB'] as const;
-    for (const pos of positions) {
+    for (const pos of ALL_POSITIONS) {
       expect(getPreflopAction(PreflopTier.Premium, pos, 30)).toBe('betBig');
       expect(getPreflopAction(PreflopTier.Premium, pos, 100)).toBe('betBig');
       expect(getPreflopAction(PreflopTier.Premium, pos, 300)).toBe('betBig');
@@ -23,65 +24,70 @@ describe('getPreflopAction', () => {
     expect(getPreflopAction(PreflopTier.Strong, 'UTG', 30)).toBe('betBig');
     expect(getPreflopAction(PreflopTier.Strong, 'CO', 40)).toBe('betBig');
     expect(getPreflopAction(PreflopTier.Strong, 'SB', 35)).toBe('betBig');
+    expect(getPreflopAction(PreflopTier.Strong, 'BB', 40)).toBe('betBig');
   });
 
-  it('bets small with strong hands in late position on normal stacks', () => {
+  it('bets small with strong hands from CO/BTN on normal stacks', () => {
     expect(getPreflopAction(PreflopTier.Strong, 'CO', 100)).toBe('betSmall');
     expect(getPreflopAction(PreflopTier.Strong, 'BTN', 200)).toBe('betSmall');
   });
 
-  it('bets big with strong hands in EP/SB on normal stacks', () => {
+  it('bets big with strong hands from UTG/MP/SB/BB on normal stacks', () => {
     expect(getPreflopAction(PreflopTier.Strong, 'UTG', 100)).toBe('betBig');
     expect(getPreflopAction(PreflopTier.Strong, 'MP', 150)).toBe('betBig');
     expect(getPreflopAction(PreflopTier.Strong, 'SB', 100)).toBe('betBig');
+    expect(getPreflopAction(PreflopTier.Strong, 'BB', 100)).toBe('betBig');
   });
 
-  it('folds playable hands from early position regardless of stack', () => {
-    expect(getPreflopAction(PreflopTier.Playable, 'UTG', 30)).toBe('fold');
-    expect(getPreflopAction(PreflopTier.Playable, 'UTG', 100)).toBe('fold');
-    expect(getPreflopAction(PreflopTier.Playable, 'MP', 200)).toBe('fold');
+  it('raises from all positions with UTG Open hands', () => {
+    for (const pos of ALL_POSITIONS) {
+      expect(getPreflopAction(PreflopTier.UTGOpen, pos, 100)).toBe('betSmall');
+      expect(getPreflopAction(PreflopTier.UTGOpen, pos, 30)).toBe('betBig');
+    }
   });
 
-  it('bets big with playable hands on short stacks (non-EP)', () => {
-    expect(getPreflopAction(PreflopTier.Playable, 'CO', 35)).toBe('betBig');
-    expect(getPreflopAction(PreflopTier.Playable, 'BTN', 40)).toBe('betBig');
-    expect(getPreflopAction(PreflopTier.Playable, 'SB', 30)).toBe('betBig');
+  it('folds MP Open hands from UTG, raises elsewhere', () => {
+    expect(getPreflopAction(PreflopTier.MPOpen, 'UTG', 100)).toBe('fold');
+    expect(getPreflopAction(PreflopTier.MPOpen, 'UTG', 30)).toBe('fold');
+    expect(getPreflopAction(PreflopTier.MPOpen, 'MP', 100)).toBe('betSmall');
+    expect(getPreflopAction(PreflopTier.MPOpen, 'CO', 100)).toBe('betSmall');
+    expect(getPreflopAction(PreflopTier.MPOpen, 'BTN', 100)).toBe('betSmall');
+    expect(getPreflopAction(PreflopTier.MPOpen, 'SB', 100)).toBe('betSmall');
+    expect(getPreflopAction(PreflopTier.MPOpen, 'BB', 100)).toBe('betSmall');
+    expect(getPreflopAction(PreflopTier.MPOpen, 'MP', 30)).toBe('betBig');
   });
 
-  it('bets small with playable hands in LP/SB on normal stacks', () => {
-    expect(getPreflopAction(PreflopTier.Playable, 'CO', 100)).toBe('betSmall');
-    expect(getPreflopAction(PreflopTier.Playable, 'BTN', 200)).toBe('betSmall');
-    expect(getPreflopAction(PreflopTier.Playable, 'SB', 150)).toBe('betSmall');
+  it('folds LP Open hands from UTG/MP, raises from CO+', () => {
+    expect(getPreflopAction(PreflopTier.LPOpen, 'UTG', 100)).toBe('fold');
+    expect(getPreflopAction(PreflopTier.LPOpen, 'MP', 100)).toBe('fold');
+    expect(getPreflopAction(PreflopTier.LPOpen, 'CO', 100)).toBe('betSmall');
+    expect(getPreflopAction(PreflopTier.LPOpen, 'BTN', 100)).toBe('betSmall');
+    expect(getPreflopAction(PreflopTier.LPOpen, 'SB', 100)).toBe('betSmall');
+    expect(getPreflopAction(PreflopTier.LPOpen, 'BB', 100)).toBe('betSmall');
+    expect(getPreflopAction(PreflopTier.LPOpen, 'CO', 30)).toBe('betBig');
   });
 
-  it('folds marginal hands on short stacks everywhere', () => {
-    expect(getPreflopAction(PreflopTier.Marginal, 'UTG', 30)).toBe('fold');
-    expect(getPreflopAction(PreflopTier.Marginal, 'BTN', 40)).toBe('fold');
-    expect(getPreflopAction(PreflopTier.Marginal, 'SB', 35)).toBe('fold');
+  it('raises steal hands from BTN/BB, calls from SB, folds elsewhere', () => {
+    expect(getPreflopAction(PreflopTier.Steal, 'UTG', 100)).toBe('fold');
+    expect(getPreflopAction(PreflopTier.Steal, 'MP', 100)).toBe('fold');
+    expect(getPreflopAction(PreflopTier.Steal, 'CO', 100)).toBe('fold');
+    expect(getPreflopAction(PreflopTier.Steal, 'BTN', 100)).toBe('betSmall');
+    expect(getPreflopAction(PreflopTier.Steal, 'SB', 100)).toBe('call');
+    expect(getPreflopAction(PreflopTier.Steal, 'BB', 100)).toBe('betSmall');
+    expect(getPreflopAction(PreflopTier.Steal, 'BTN', 30)).toBe('betBig');
+    expect(getPreflopAction(PreflopTier.Steal, 'BB', 30)).toBe('betBig');
   });
 
-  it('bets small with marginal hands from BTN on normal stacks', () => {
-    expect(getPreflopAction(PreflopTier.Marginal, 'BTN', 100)).toBe('betSmall');
-    expect(getPreflopAction(PreflopTier.Marginal, 'BTN', 200)).toBe('betSmall');
+  it('folds steal hands from SB on short stacks', () => {
+    expect(getPreflopAction(PreflopTier.Steal, 'SB', 30)).toBe('fold');
+    expect(getPreflopAction(PreflopTier.Steal, 'SB', 40)).toBe('fold');
   });
 
-  it('calls with marginal hands from SB on normal stacks', () => {
-    expect(getPreflopAction(PreflopTier.Marginal, 'SB', 100)).toBe('call');
-    expect(getPreflopAction(PreflopTier.Marginal, 'SB', 200)).toBe('call');
-  });
-
-  it('folds marginal hands from EP/CO on normal stacks', () => {
-    expect(getPreflopAction(PreflopTier.Marginal, 'UTG', 100)).toBe('fold');
-    expect(getPreflopAction(PreflopTier.Marginal, 'MP', 200)).toBe('fold');
-    expect(getPreflopAction(PreflopTier.Marginal, 'CO', 100)).toBe('fold');
-  });
-
-  it('always folds weak hands', () => {
-    const positions = ['UTG', 'MP', 'CO', 'BTN', 'SB'] as const;
-    for (const pos of positions) {
-      expect(getPreflopAction(PreflopTier.Weak, pos, 30)).toBe('fold');
-      expect(getPreflopAction(PreflopTier.Weak, pos, 100)).toBe('fold');
-      expect(getPreflopAction(PreflopTier.Weak, pos, 300)).toBe('fold');
+  it('always folds trash hands', () => {
+    for (const pos of ALL_POSITIONS) {
+      expect(getPreflopAction(PreflopTier.Trash, pos, 30)).toBe('fold');
+      expect(getPreflopAction(PreflopTier.Trash, pos, 100)).toBe('fold');
+      expect(getPreflopAction(PreflopTier.Trash, pos, 300)).toBe('fold');
     }
   });
 });
@@ -124,8 +130,8 @@ describe('generatePreflopActionQuestion', () => {
     }
   });
 
-  it('uses valid positions (not BB)', () => {
-    const validPositions = new Set(['UTG', 'MP', 'CO', 'BTN', 'SB']);
+  it('uses valid positions including BB', () => {
+    const validPositions = new Set(['UTG', 'MP', 'CO', 'BTN', 'SB', 'BB']);
     for (let i = 0; i < 50; i++) {
       const q = generatePreflopActionQuestion();
       expect(validPositions.has(q.scenario.position!)).toBe(true);
