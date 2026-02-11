@@ -5,22 +5,41 @@ import { createDeck, drawCards, cardKey } from '../deck';
 import { findTopNHands } from '../nuts';
 import { shuffle } from '../../utils/shuffle';
 
+type Street = 'Flop' | 'Turn' | 'River';
+
 interface HandResult {
   holeCards: Card[];
   hand: EvaluatedHand;
 }
 
+function pickStreet(): Street {
+  const roll = Math.random() * 100;
+  if (roll < 33) return 'Flop';
+  if (roll < 66) return 'Turn';
+  return 'River';
+}
+
+function communityCardCount(street: Street): number {
+  switch (street) {
+    case 'Flop': return 3;
+    case 'Turn': return 4;
+    case 'River': return 5;
+  }
+}
+
 /**
  * Generate a nuts reading question: "What is the best possible hand (the nuts)?"
- * Shows 5 community cards, correct answer is the nuts hole cards.
+ * Shows community cards on flop, turn, or river; correct answer is the nuts hole cards.
  */
 export function generateNutsReadingQuestion(options?: { allowOverlap?: boolean }): Question {
   const maxAttempts = 50;
   const allowOverlap = options?.allowOverlap ?? false;
+  const street = pickStreet();
+  const ccCount = communityCardCount(street);
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const deck = createDeck();
-    const { drawn: community } = drawCards(deck, 5);
+    const { drawn: community } = drawCards(deck, ccCount);
 
     // Skip boards with paired ranks — they make four-of-a-kind the nuts too often
     const ranks = community.map(c => c.rank);
@@ -74,13 +93,15 @@ export function generateNutsReadingQuestion(options?: { allowOverlap?: boolean }
       })),
     ];
 
+    const streetPhrase = `on the ${street.toLowerCase()}`;
+
     return {
       id: crypto.randomUUID(),
       category: 'nutsReading',
-      questionText: 'Which hole cards make the best possible hand (the nuts)?',
-      scenario: { communityCards: community } as Scenario,
+      questionText: `Which hole cards make the best possible hand ${streetPhrase}?`,
+      scenario: { communityCards: community, street } as Scenario,
       options: shuffle(options),
-      explanation: `The nuts is ${formatHoleCards(nuts.holeCards)}, making ${nuts.hand.name}.`,
+      explanation: `The nuts ${streetPhrase} is ${formatHoleCards(nuts.holeCards)}, making ${nuts.hand.name}.`,
     };
   }
 

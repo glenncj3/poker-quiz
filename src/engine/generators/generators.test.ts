@@ -63,13 +63,17 @@ describe('generateHandRankingQuestion', () => {
 });
 
 describe('generateNutsReadingQuestion', () => {
-  it('produces valid questions repeatedly', () => {
-    for (let i = 0; i < 5; i++) {
+  it('produces valid questions across flop, turn, and river', () => {
+    const streetsSeen = new Set<string>();
+    for (let i = 0; i < 30; i++) {
       const q = generateNutsReadingQuestion();
       validateQuestion(q);
       expect(q.category).toBe('nutsReading');
-      expect(q.scenario.communityCards).toHaveLength(5);
+      expect(['Flop', 'Turn', 'River']).toContain(q.scenario.street);
+      validateStreetCards(q);
+      streetsSeen.add(q.scenario.street!);
     }
+    expect(streetsSeen.size).toBeGreaterThanOrEqual(2);
   });
 });
 
