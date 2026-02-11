@@ -15,8 +15,8 @@ export function ScoreRing({ correct, total, size = 160 }: ScoreRingProps) {
   else if (pct >= 0.5) color = '#d4af37'; // gold
 
   return (
-    <div className="flex flex-col items-center gap-2">
-      <svg width={size} height={size} className="transform -rotate-90">
+    <div className="relative inline-flex items-center justify-center animate-scale-in" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="transform -rotate-90" aria-hidden="true">
         {/* Background ring */}
         <circle
           cx={size / 2}
@@ -40,7 +40,7 @@ export function ScoreRing({ correct, total, size = 160 }: ScoreRingProps) {
           className="transition-all duration-1000 ease-out"
         />
       </svg>
-      <div className="absolute flex flex-col items-center justify-center" style={{ width: size, height: size }}>
+      <div className="absolute inset-0 flex flex-col items-center justify-center" aria-label={`Score: ${correct} of ${total}`}>
         <span className="text-3xl font-bold" style={{ color }}>{correct}</span>
         <span className="text-sm text-gray-400">of {total}</span>
       </div>

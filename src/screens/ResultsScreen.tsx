@@ -28,13 +28,11 @@ export function ResultsScreen({ correct, total, details, onRetry, onCategorySele
   else if (pct >= 50) message = 'Not bad!';
 
   return (
-    <div className="min-h-screen bg-dark-bg p-4 sm:p-6">
+    <div className="min-h-screen bg-dark-bg p-4 sm:p-6 animate-fade-in">
       <div className="max-w-lg mx-auto flex flex-col items-center gap-6">
         <h2 className="text-2xl font-bold text-gold">Quiz Complete</h2>
 
-        <div className="relative">
-          <ScoreRing correct={correct} total={total} />
-        </div>
+        <ScoreRing correct={correct} total={total} />
 
         <p className="text-lg text-gray-300">{message} — {pct}%</p>
 

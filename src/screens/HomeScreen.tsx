@@ -6,8 +6,8 @@ interface HomeScreenProps {
 
 export function HomeScreen({ onStart }: HomeScreenProps) {
   return (
-    <div className="min-h-screen bg-dark-bg flex flex-col items-center justify-center p-6">
-      <div className="flex gap-2 mb-6">
+    <div className="min-h-screen bg-dark-bg flex flex-col items-center justify-center p-6 animate-fade-in">
+      <div className="flex gap-2 mb-6 animate-scale-in">
         <Card card={{ rank: 'A', suit: 'spades' }} size="lg" />
         <Card card={{ rank: 'K', suit: 'hearts' }} size="lg" />
       </div>
@@ -23,7 +23,8 @@ export function HomeScreen({ onStart }: HomeScreenProps) {
       <button
         onClick={onStart}
         className="bg-gold text-dark-bg font-bold text-lg px-8 py-4 rounded-xl
-          hover:bg-gold-light active:scale-[0.97] transition-all duration-200 cursor-pointer"
+          hover:bg-gold-light active:scale-[0.97] transition-all duration-200 cursor-pointer
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-light"
       >
         Start Quiz
       </button>

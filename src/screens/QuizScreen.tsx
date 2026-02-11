@@ -27,12 +27,14 @@ export function QuizScreen({ state, question, onSelectAnswer, onNext, onQuit }: 
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg p-4 sm:p-6">
+    <div className="min-h-screen bg-dark-bg p-4 sm:p-6 animate-fade-in">
       <div className="max-w-lg mx-auto flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <button
             onClick={onQuit}
-            className="text-gray-400 hover:text-gold text-sm cursor-pointer transition-colors"
+            className="text-gray-400 hover:text-gold text-sm cursor-pointer transition-colors
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+            aria-label="Quit quiz"
           >
             ← Quit
           </button>
@@ -40,33 +42,36 @@ export function QuizScreen({ state, question, onSelectAnswer, onNext, onQuit }: 
 
         <ProgressBar current={state.currentIndex} total={state.questions.length} />
 
-        <PokerTable
-          communityCards={question.scenario.communityCards}
-          holeCards={question.scenario.holeCards}
-          opponentHands={question.scenario.opponentHands}
-        />
+        {/* Key forces re-mount + animation on question change */}
+        <div key={question.id} className="flex flex-col gap-4 animate-scale-in">
+          <PokerTable
+            communityCards={question.scenario.communityCards}
+            holeCards={question.scenario.holeCards}
+            opponentHands={question.scenario.opponentHands}
+          />
 
-        <GameInfo
-          potSize={question.scenario.potSize}
-          betSize={question.scenario.betSize}
-          position={question.scenario.position}
-          street={question.scenario.street}
-        />
+          <GameInfo
+            potSize={question.scenario.potSize}
+            betSize={question.scenario.betSize}
+            position={question.scenario.position}
+            street={question.scenario.street}
+          />
 
-        <p className="text-base font-semibold text-center text-gray-100">
-          {question.questionText}
-        </p>
+          <p className="text-base font-semibold text-center text-gray-100">
+            {question.questionText}
+          </p>
 
-        <div className="flex flex-col gap-2">
-          {question.options.map(opt => (
-            <OptionButton
-              key={opt.id}
-              label={opt.label}
-              state={getOptionState(opt.id)}
-              onClick={() => onSelectAnswer(opt.id)}
-              disabled={state.showingExplanation}
-            />
-          ))}
+          <div className="flex flex-col gap-2" role="group" aria-label="Answer options">
+            {question.options.map(opt => (
+              <OptionButton
+                key={opt.id}
+                label={opt.label}
+                state={getOptionState(opt.id)}
+                onClick={() => onSelectAnswer(opt.id)}
+                disabled={state.showingExplanation}
+              />
+            ))}
+          </div>
         </div>
 
         <Explanation
@@ -78,8 +83,9 @@ export function QuizScreen({ state, question, onSelectAnswer, onNext, onQuit }: 
         {state.showingExplanation && (
           <button
             onClick={onNext}
-            className="bg-gold text-dark-bg font-bold py-3 rounded-xl
-              hover:bg-gold-light active:scale-[0.97] transition-all duration-200 cursor-pointer"
+            className="bg-gold text-dark-bg font-bold py-3 rounded-xl animate-slide-up
+              hover:bg-gold-light active:scale-[0.97] transition-all duration-200 cursor-pointer
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-light"
           >
             {state.currentIndex < state.questions.length - 1 ? 'Next Question' : 'See Results'}
           </button>

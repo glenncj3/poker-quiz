@@ -13,6 +13,39 @@
   --color-poker-black: #2c3e50;
   --color-correct: #27ae60;
   --color-incorrect: #e74c3c;
+
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-slide-up: slide-up 0.3s ease-out;
+  --animate-scale-in: scale-in 0.3s ease-out;
+  --animate-pulse-correct: pulse-correct 0.6s ease-out;
+  --animate-pulse-incorrect: pulse-incorrect 0.6s ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse-correct {
+  0% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(39, 174, 96, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); }
+}
+
+@keyframes pulse-incorrect {
+  0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
 }
 
 :root {
@@ -32,6 +65,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   min-height: 100dvh;
+  overflow-x: hidden;
 }
 
 #root {

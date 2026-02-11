@@ -8,7 +8,7 @@ export function Explanation({ isCorrect, text, visible }: ExplanationProps) {
   if (!visible) return null;
 
   return (
-    <div className={`rounded-xl p-4 border-2 transition-all duration-300
+    <div className={`rounded-xl p-4 border-2 animate-slide-up
       ${isCorrect
         ? 'bg-correct/10 border-correct/30'
         : 'bg-incorrect/10 border-incorrect/30'
