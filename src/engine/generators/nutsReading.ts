@@ -14,33 +14,42 @@ interface HandResult {
  * Generate a nuts reading question: "What is the best possible hand (the nuts)?"
  * Shows 5 community cards, correct answer is the nuts hole cards.
  */
-export function generateNutsReadingQuestion(): Question {
+export function generateNutsReadingQuestion(options?: { allowOverlap?: boolean }): Question {
   const maxAttempts = 50;
+  const allowOverlap = options?.allowOverlap ?? false;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const deck = createDeck();
     const { drawn: community } = drawCards(deck, 5);
 
-    // Find top 6 distinct hands
-    const topHands = findTopNHands(community, 6);
+    const topHands = findTopNHands(community, 8);
     if (topHands.length < 4) continue;
 
     const nuts = topHands[0];
 
-    // Find 3 distractors that don't share cards with community or nuts
+    // Find 3 distractors
     const distractors: HandResult[] = [];
-    const usedKeys = new Set([...community, ...nuts.holeCards].map(cardKey));
 
-    for (let i = 1; i < topHands.length && distractors.length < 3; i++) {
-      const d = topHands[i];
-      const dKeys = d.holeCards.map(cardKey);
-      const conflict = dKeys.some(k =>
-        usedKeys.has(k) ||
-        distractors.some(ad => ad.holeCards.some(c => cardKey(c) === k))
-      );
-      if (!conflict) {
-        distractors.push(d);
-        dKeys.forEach(k => usedKeys.add(k));
+    if (allowOverlap) {
+      // Take next 3 hands directly — cards may overlap with nuts or each other
+      for (let i = 1; i < topHands.length && distractors.length < 3; i++) {
+        distractors.push(topHands[i]);
+      }
+    } else {
+      // Strict: distractors can't share cards with community, nuts, or each other
+      const usedKeys = new Set([...community, ...nuts.holeCards].map(cardKey));
+
+      for (let i = 1; i < topHands.length && distractors.length < 3; i++) {
+        const d = topHands[i];
+        const dKeys = d.holeCards.map(cardKey);
+        const conflict = dKeys.some(k =>
+          usedKeys.has(k) ||
+          distractors.some(ad => ad.holeCards.some(c => cardKey(c) === k))
+        );
+        if (!conflict) {
+          distractors.push(d);
+          dKeys.forEach(k => usedKeys.add(k));
+        }
       }
     }
 

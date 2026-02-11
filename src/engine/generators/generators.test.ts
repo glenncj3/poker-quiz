@@ -63,8 +63,13 @@ describe('generateOutsImprovementQuestion', () => {
       const q = generateOutsImprovementQuestion();
       validateQuestion(q);
       expect(q.category).toBe('outsImprovement');
-      expect(q.scenario.communityCards).toHaveLength(3);
+      expect([3, 4]).toContain(q.scenario.communityCards.length);
       expect(q.scenario.holeCards).toHaveLength(2);
+      if (q.scenario.communityCards.length === 3) {
+        expect(q.scenario.street).toBe('Flop');
+      } else {
+        expect(q.scenario.street).toBe('Turn');
+      }
     }
   });
 });

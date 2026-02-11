@@ -36,6 +36,18 @@ function generateQuestions(category: QuizCategory, count: number = 10): Question
     return questions;
   }
 
+  if (category === 'nutsReading') {
+    // Pick 3 random indices to allow card overlap in distractors
+    const overlapIndices = new Set<number>();
+    while (overlapIndices.size < 3) {
+      overlapIndices.add(Math.floor(Math.random() * count));
+    }
+    for (let i = 0; i < count; i++) {
+      questions.push(generateNutsReadingQuestion({ allowOverlap: overlapIndices.has(i) }));
+    }
+    return questions;
+  }
+
   const generator = GENERATORS[category];
   for (let i = 0; i < count; i++) {
     questions.push(generator());

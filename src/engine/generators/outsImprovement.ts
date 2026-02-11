@@ -29,28 +29,32 @@ function makeCard(rank: Rank, suit: Suit): Card {
 
 /**
  * Construct a draw scenario intentionally.
+ * street controls whether to deal 3 (Flop) or 4 (Turn) community cards.
  */
-function constructDrawScenario(): DrawSetup {
+function constructDrawScenario(street: 'Flop' | 'Turn'): DrawSetup {
   const drawTypes: DrawType[] = ['flushDraw', 'oesd', 'gutshot'];
   const drawType = drawTypes[Math.floor(Math.random() * drawTypes.length)];
+
+  let holeCards: Card[];
+  let communityCards: Card[];
 
   if (drawType === 'flushDraw') {
     // 4 cards of same suit, need 1 more
     const suit = randomSuit();
     const otherSuit = SUITS.find(s => s !== suit)!;
-    const ranks = shuffle([...RANKS]).slice(0, 6);
-    return {
-      holeCards: [makeCard(ranks[0], suit), makeCard(ranks[1], suit)],
-      communityCards: [
-        makeCard(ranks[2], suit),
-        makeCard(ranks[3], suit),
-        makeCard(ranks[4], otherSuit),
-      ],
-      drawType,
-    };
-  }
-
-  if (drawType === 'oesd') {
+    const ranks = shuffle([...RANKS]).slice(0, 7);
+    holeCards = [makeCard(ranks[0], suit), makeCard(ranks[1], suit)];
+    communityCards = [
+      makeCard(ranks[2], suit),
+      makeCard(ranks[3], suit),
+      makeCard(ranks[4], otherSuit),
+    ];
+    if (street === 'Turn') {
+      // Add a 4th community card in a different suit to keep the flush draw alive
+      const offSuits = SUITS.filter(s => s !== suit);
+      communityCards.push(makeCard(ranks[5], offSuits[Math.floor(Math.random() * offSuits.length)]));
+    }
+  } else if (drawType === 'oesd') {
     // Open-ended straight draw: 4 consecutive cards
     const startVal = 4 + Math.floor(Math.random() * 7); // 4-10
     const suits = shuffle([...SUITS]);
@@ -58,34 +62,39 @@ function constructDrawScenario(): DrawSetup {
       const entry = Object.entries(RANK_VALUES).find(([, val]) => val === v);
       return (entry?.[0] || '7') as Rank;
     };
-    return {
-      holeCards: [makeCard(r(startVal), suits[0]), makeCard(r(startVal + 1), suits[1])],
-      communityCards: [
-        makeCard(r(startVal + 2), suits[2]),
-        makeCard(r(startVal + 3), suits[3]),
-        makeCard(randomRank(2, Math.max(2, startVal - 3)), suits[0]),
-      ],
-      drawType,
+    holeCards = [makeCard(r(startVal), suits[0]), makeCard(r(startVal + 1), suits[1])];
+    communityCards = [
+      makeCard(r(startVal + 2), suits[2]),
+      makeCard(r(startVal + 3), suits[3]),
+      makeCard(randomRank(2, Math.max(2, startVal - 3)), suits[0]),
+    ];
+    if (street === 'Turn') {
+      // Add a low card far from the straight range to keep the draw open
+      const safeRank = randomRank(2, Math.max(2, startVal - 4));
+      communityCards.push(makeCard(safeRank, suits[1]));
+    }
+  } else {
+    // Gutshot: missing one card in the middle of a straight
+    const startVal = 4 + Math.floor(Math.random() * 7);
+    const suits = shuffle([...SUITS]);
+    const r = (v: number) => {
+      const entry = Object.entries(RANK_VALUES).find(([, val]) => val === v);
+      return (entry?.[0] || '7') as Rank;
     };
-  }
-
-  // Gutshot: missing one card in the middle of a straight
-  const startVal = 4 + Math.floor(Math.random() * 7);
-  const suits = shuffle([...SUITS]);
-  const r = (v: number) => {
-    const entry = Object.entries(RANK_VALUES).find(([, val]) => val === v);
-    return (entry?.[0] || '7') as Rank;
-  };
-  // Skip the middle card (startVal+2)
-  return {
-    holeCards: [makeCard(r(startVal), suits[0]), makeCard(r(startVal + 1), suits[1])],
-    communityCards: [
+    // Skip the middle card (startVal+2)
+    holeCards = [makeCard(r(startVal), suits[0]), makeCard(r(startVal + 1), suits[1])];
+    communityCards = [
       makeCard(r(startVal + 3), suits[2]),
       makeCard(r(startVal + 4), suits[3]),
       makeCard(randomRank(2, Math.max(2, startVal - 3)), suits[0]),
-    ],
-    drawType,
-  };
+    ];
+    if (street === 'Turn') {
+      const safeRank = randomRank(2, Math.max(2, startVal - 4));
+      communityCards.push(makeCard(safeRank, suits[1]));
+    }
+  }
+
+  return { holeCards, communityCards, drawType };
 }
 
 /**
@@ -93,9 +102,10 @@ function constructDrawScenario(): DrawSetup {
  */
 export function generateOutsImprovementQuestion(): Question {
   const maxAttempts = 50;
+  const street = Math.random() < 0.7 ? 'Flop' : 'Turn';
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    const setup = constructDrawScenario();
+    const setup = constructDrawScenario(street);
     const { holeCards, communityCards } = setup;
 
     // Validate no duplicate cards
@@ -148,7 +158,7 @@ export function generateOutsImprovementQuestion(): Question {
     const scenario: Scenario = {
       communityCards,
       holeCards,
-      street: 'Flop',
+      street,
     };
 
     const outsCount = outs.length;
