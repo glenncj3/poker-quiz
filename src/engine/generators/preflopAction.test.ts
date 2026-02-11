@@ -4,7 +4,7 @@ import {
   getPreflopAction,
   ACTION_LABELS,
 } from './preflopAction';
-import { PreflopTier } from '../preflop';
+import { classifyPreflopHand, PreflopTier } from '../preflop';
 import { cardKey } from '../deck';
 
 // ── getPreflopAction ──
@@ -167,6 +167,25 @@ describe('generatePreflopActionQuestion', () => {
       const q = generatePreflopActionQuestion();
       expect(q.questionText).toContain(q.scenario.position!);
       expect(q.questionText).toContain(`$${q.scenario.heroStack}`);
+    }
+  });
+
+  it('generates a hand matching the requested targetTier', () => {
+    const tiers = [
+      PreflopTier.Trash,
+      PreflopTier.Steal,
+      PreflopTier.LPOpen,
+      PreflopTier.MPOpen,
+      PreflopTier.UTGOpen,
+      PreflopTier.Strong,
+      PreflopTier.Premium,
+    ] as const;
+    for (const tier of tiers) {
+      for (let i = 0; i < 5; i++) {
+        const q = generatePreflopActionQuestion({ targetTier: tier });
+        const actual = classifyPreflopHand(q.scenario.holeCards!);
+        expect(actual).toBe(tier);
+      }
     }
   });
 });

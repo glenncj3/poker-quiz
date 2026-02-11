@@ -1,5 +1,4 @@
 import type { Question, Option, Scenario } from '../../types/quiz';
-import { RANK_VALUES } from '../../types/card';
 import { createDeck, drawCards, cardKey } from '../deck';
 import { shuffle } from '../../utils/shuffle';
 import { classifyPreflopHand, handNotation, PreflopTier } from '../preflop';
@@ -162,9 +161,9 @@ function buildExplanation(
 
 // ── Main generator ──
 
-export function generatePreflopActionQuestion(options?: { filtered?: boolean }): Question {
-  const filtered = options?.filtered ?? true;
-  const maxAttempts = 100;
+export function generatePreflopActionQuestion(options?: { targetTier?: PreflopTier }): Question {
+  const targetTier = options?.targetTier;
+  const maxAttempts = 200;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const deck = createDeck();
@@ -173,17 +172,10 @@ export function generatePreflopActionQuestion(options?: { filtered?: boolean }):
     const cardSet = new Set(holeCards.map(cardKey));
     if (cardSet.size !== 2) continue;
 
-    // Filter out unsuited hands where any card is 7 or lower
-    if (filtered) {
-      const suited = holeCards[0].suit === holeCards[1].suit;
-      if (!suited) {
-        const v0 = RANK_VALUES[holeCards[0].rank];
-        const v1 = RANK_VALUES[holeCards[1].rank];
-        if (v0 <= 7 || v1 <= 7) continue;
-      }
-    }
-
     const tier = classifyPreflopHand(holeCards);
+
+    // If a target tier was requested, skip hands that don't match
+    if (targetTier !== undefined && tier !== targetTier) continue;
     const notation = handNotation(holeCards);
     const pos = POSITIONS[Math.floor(Math.random() * POSITIONS.length)];
     const stack = randomStack();

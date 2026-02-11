@@ -4,6 +4,7 @@ import { generateHandRankingQuestion } from '../engine/generators/handRanking';
 import { generateNutsReadingQuestion } from '../engine/generators/nutsReading';
 import { generateOutsImprovementQuestion } from '../engine/generators/outsImprovement';
 import { generatePreflopActionQuestion } from '../engine/generators/preflopAction';
+import { PreflopTier } from '../engine/preflop';
 
 const GENERATORS: Record<Exclude<QuizCategory, 'randomMix'>, () => Question> = {
   handRanking: generateHandRankingQuestion,
@@ -66,10 +67,18 @@ function generateQuestions(category: QuizCategory, count: number = 10): Question
   }
 
   if (category === 'preflopAction') {
-    for (let i = 0; i < 9; i++) {
-      questions.push(generatePreflopActionQuestion({ filtered: true }));
+    // Tier frequency: 1×Trash, 2×Steal, 2×LPOpen, 2×MPOpen, 2×UTGOpen, 1×Strong
+    const tierPattern: PreflopTier[] = [
+      PreflopTier.Trash,
+      PreflopTier.Steal, PreflopTier.Steal,
+      PreflopTier.LPOpen, PreflopTier.LPOpen,
+      PreflopTier.MPOpen, PreflopTier.MPOpen,
+      PreflopTier.UTGOpen, PreflopTier.UTGOpen,
+      PreflopTier.Strong,
+    ];
+    for (const tier of tierPattern) {
+      questions.push(generatePreflopActionQuestion({ targetTier: tier }));
     }
-    questions.push(generatePreflopActionQuestion({ filtered: false }));
     for (let i = questions.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [questions[i], questions[j]] = [questions[j], questions[i]];
