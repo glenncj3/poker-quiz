@@ -1,17 +1,12 @@
 import { Card } from '../components/Card';
-import { HandRankingsButton } from '../components/HandRankingsButton';
 
 interface HomeScreenProps {
   onStart: () => void;
-  onOpenHandRankings: () => void;
 }
 
-export function HomeScreen({ onStart, onOpenHandRankings }: HomeScreenProps) {
+export function HomeScreen({ onStart }: HomeScreenProps) {
   return (
     <div className="h-dvh bg-dark-bg flex flex-col items-center justify-center p-6 animate-fade-in relative">
-      <div className="absolute top-4 right-4">
-        <HandRankingsButton onClick={onOpenHandRankings} />
-      </div>
       <div className="flex gap-2 mb-4 animate-scale-in">
         <Card card={{ rank: 'A', suit: 'spades' }} size="md" />
         <Card card={{ rank: 'K', suit: 'hearts' }} size="md" />

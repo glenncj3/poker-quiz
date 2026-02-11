@@ -44,12 +44,7 @@ function App() {
 
   switch (screen) {
     case 'home':
-      return (
-        <>
-          <HomeScreen onStart={() => setScreen('categorySelect')} onOpenHandRankings={openHandRankings} />
-          {modal}
-        </>
-      );
+      return <HomeScreen onStart={() => setScreen('categorySelect')} />;
 
     case 'categorySelect':
       return (

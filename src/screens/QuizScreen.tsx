@@ -35,7 +35,9 @@ export function QuizScreen({ state, question, onSelectAnswer, onNext, onQuit, on
         <div className="flex items-center justify-between">
           <button
             onClick={onQuit}
-            className="text-gray-400 hover:text-gold text-xs cursor-pointer transition-colors
+            className="bg-dark-card border border-gray-700 rounded-lg px-3 py-1 text-xs text-gray-300
+              hover:border-gold hover:bg-dark-surface hover:text-gold active:scale-[0.97]
+              transition-all duration-200 cursor-pointer
               focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
             aria-label="Quit quiz"
           >

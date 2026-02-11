@@ -48,7 +48,9 @@ export function CategorySelectScreen({ onSelect, onBack, onOpenHandRankings }: C
         <div className="flex items-center justify-between mb-3">
           <button
             onClick={onBack}
-            className="text-gray-400 hover:text-gold text-xs cursor-pointer transition-colors"
+            className="bg-dark-card border border-gray-700 rounded-lg px-3 py-1 text-xs text-gray-300
+              hover:border-gold hover:bg-dark-surface hover:text-gold active:scale-[0.97]
+              transition-all duration-200 cursor-pointer"
           >
             ← Back
           </button>
