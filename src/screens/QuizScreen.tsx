@@ -32,7 +32,7 @@ export function QuizScreen({ state, question, isStreak, onSelectAnswer, onNext, 
 
   return (
     <div className="h-dvh bg-dark-bg p-3 animate-fade-in overflow-y-auto">
-      <div className="max-w-lg mx-auto flex flex-col gap-2 h-full">
+      <div className="max-w-lg mx-auto flex flex-col gap-2 min-h-full">
         <div className="flex items-center justify-between">
           <button
             onClick={onQuit}
@@ -57,7 +57,7 @@ export function QuizScreen({ state, question, isStreak, onSelectAnswer, onNext, 
         {!isStreak && <ProgressBar current={state.currentIndex} total={state.questions.length} />}
 
         {/* Key forces re-mount + animation on question change */}
-        <div key={question.id} className="flex flex-col gap-2 animate-scale-in flex-1 min-h-0">
+        <div key={question.id} className="flex flex-col gap-2 animate-scale-in flex-1">
           <PokerTable
             communityCards={question.scenario.communityCards}
             holeCards={question.scenario.holeCards}
