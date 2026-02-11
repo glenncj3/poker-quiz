@@ -94,9 +94,7 @@ describe('generateOutsImprovementQuestion', () => {
 });
 
 describe('generatePreflopActionQuestion', () => {
-  it('produces valid questions with RFI and facing-raise scenarios', () => {
-    let rfiCount = 0;
-    let facingCount = 0;
+  it('produces valid preflop action questions', () => {
     for (let i = 0; i < 50; i++) {
       const q = generatePreflopActionQuestion();
       validateQuestion(q);
@@ -106,16 +104,8 @@ describe('generatePreflopActionQuestion', () => {
       expect(q.scenario.communityCards).toHaveLength(0);
       expect(q.scenario.street).toBe('Preflop');
       expect(q.scenario.heroStack).toBeGreaterThan(0);
-
-      if (q.scenario.villainStack) {
-        facingCount++;
-        expect(q.scenario.betSize).toBeGreaterThan(0);
-      } else {
-        rfiCount++;
-      }
+      expect(q.scenario.villainStack).toBeUndefined();
+      expect(q.scenario.betSize).toBeUndefined();
     }
-    // With 50 iterations at 50/50 split, both types should appear
-    expect(rfiCount).toBeGreaterThan(0);
-    expect(facingCount).toBeGreaterThan(0);
   });
 });
