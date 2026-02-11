@@ -35,13 +35,23 @@ function generateQuestions(category: QuizCategory, count: number = 10): Question
   }
 
   if (category === 'nutsReading') {
+    // 6 best hand, 2 second-best, 2 third-best
+    const targetRanks = [1, 1, 1, 1, 1, 1, 2, 2, 3, 3];
     // Pick 3 random indices to allow card overlap in distractors
     const overlapIndices = new Set<number>();
     while (overlapIndices.size < 3) {
-      overlapIndices.add(Math.floor(Math.random() * count));
+      overlapIndices.add(Math.floor(Math.random() * targetRanks.length));
     }
-    for (let i = 0; i < count; i++) {
-      questions.push(generateNutsReadingQuestion({ allowOverlap: overlapIndices.has(i) }));
+    for (let i = 0; i < targetRanks.length; i++) {
+      questions.push(generateNutsReadingQuestion({
+        allowOverlap: overlapIndices.has(i),
+        targetRank: targetRanks[i],
+      }));
+    }
+    // Shuffle so 2nd/3rd-best questions aren't always at the end
+    for (let i = questions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [questions[i], questions[j]] = [questions[j], questions[i]];
     }
     return questions;
   }

@@ -28,12 +28,14 @@ function communityCardCount(street: Street): number {
 }
 
 /**
- * Generate a nuts reading question: "What is the best possible hand (the nuts)?"
- * Shows community cards on flop, turn, or river; correct answer is the nuts hole cards.
+ * Generate a nuts reading question.
+ * targetRank: 1 = best hand (nuts), 2 = second-best, 3 = third-best.
+ * Shows community cards on flop, turn, or river; correct answer is the target-ranked hole cards.
  */
-export function generateNutsReadingQuestion(options?: { allowOverlap?: boolean }): Question {
+export function generateNutsReadingQuestion(options?: { allowOverlap?: boolean; targetRank?: number }): Question {
   const maxAttempts = 50;
   const allowOverlap = options?.allowOverlap ?? false;
+  const targetRank = options?.targetRank ?? 1;
   const street = pickStreet();
   const ccCount = communityCardCount(street);
 
@@ -45,24 +47,25 @@ export function generateNutsReadingQuestion(options?: { allowOverlap?: boolean }
     const ranks = community.map(c => c.rank);
     if (new Set(ranks).size !== ranks.length) continue;
 
-    const topHands = findTopNHands(community, 8);
-    if (topHands.length < 4) continue;
+    const topHands = findTopNHands(community, 16);
+    if (topHands.length < targetRank + 3) continue;
 
-    const nuts = topHands[0];
+    const correctHand = topHands[targetRank - 1];
 
-    // Find 3 distractors
+    // Find 3 distractors from other distinct-strength hands
     const distractors: HandResult[] = [];
 
     if (allowOverlap) {
-      // Take next 3 hands directly — cards may overlap with nuts or each other
-      for (let i = 1; i < topHands.length && distractors.length < 3; i++) {
+      for (let i = 0; i < topHands.length && distractors.length < 3; i++) {
+        if (i === targetRank - 1) continue;
         distractors.push(topHands[i]);
       }
     } else {
-      // Strict: distractors can't share cards with community, nuts, or each other
-      const usedKeys = new Set([...community, ...nuts.holeCards].map(cardKey));
+      // Strict: distractors can't share cards with community, correct answer, or each other
+      const usedKeys = new Set([...community, ...correctHand.holeCards].map(cardKey));
 
-      for (let i = 1; i < topHands.length && distractors.length < 3; i++) {
+      for (let i = 0; i < topHands.length && distractors.length < 3; i++) {
+        if (i === targetRank - 1) continue;
         const d = topHands[i];
         const dKeys = d.holeCards.map(cardKey);
         const conflict = dKeys.some(k =>
@@ -78,11 +81,14 @@ export function generateNutsReadingQuestion(options?: { allowOverlap?: boolean }
 
     if (distractors.length < 3) continue;
 
-    const options: Option[] = [
+    const rankLabel = targetRank === 1 ? 'best' : targetRank === 2 ? 'second-best' : 'third-best';
+    const streetPhrase = `on the ${street.toLowerCase()}`;
+
+    const opts: Option[] = [
       {
-        id: 'opt_nuts',
-        label: formatHoleCards(nuts.holeCards),
-        cards: nuts.holeCards,
+        id: 'opt_correct',
+        label: formatHoleCards(correctHand.holeCards),
+        cards: correctHand.holeCards,
         isCorrect: true,
       },
       ...distractors.map((d, i) => ({
@@ -93,15 +99,15 @@ export function generateNutsReadingQuestion(options?: { allowOverlap?: boolean }
       })),
     ];
 
-    const streetPhrase = `on the ${street.toLowerCase()}`;
-
     return {
       id: crypto.randomUUID(),
       category: 'nutsReading',
-      questionText: `Which hole cards make the best possible hand ${streetPhrase}?`,
+      questionText: `Which hole cards make the ${rankLabel} possible hand ${streetPhrase}?`,
       scenario: { communityCards: community, street } as Scenario,
-      options: shuffle(options),
-      explanation: `The nuts ${streetPhrase} is ${formatHoleCards(nuts.holeCards)}, making ${nuts.hand.name}.`,
+      options: shuffle(opts),
+      explanation: targetRank === 1
+        ? `The nuts ${streetPhrase} is ${formatHoleCards(correctHand.holeCards)}, making ${correctHand.hand.name}.`
+        : `The ${rankLabel} hand ${streetPhrase} is ${formatHoleCards(correctHand.holeCards)}, making ${correctHand.hand.name}.`,
     };
   }
 
