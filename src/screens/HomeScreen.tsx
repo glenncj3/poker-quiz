@@ -13,7 +13,7 @@ export function HomeScreen({ onStart }: HomeScreenProps) {
       </div>
 
       <h1 className="text-3xl sm:text-4xl font-bold text-gold mb-2 text-center">
-        Poker Trainer
+        Poker Quiz
       </h1>
 
       <p className="text-gray-400 text-sm text-center mb-6 max-w-sm">
