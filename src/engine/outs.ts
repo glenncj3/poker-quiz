@@ -1,4 +1,4 @@
-import type { Card } from '../types/card';
+import type { Card, HandType } from '../types/card';
 import { SUITS, RANKS } from '../types/card';
 import { cardKey } from './deck';
 import { evaluateHand } from './evaluator';
@@ -7,6 +7,7 @@ export interface OutCard {
   card: Card;
   improvementDelta: number;
   newHandName: string;
+  newHandType: HandType;
 }
 
 /**
@@ -32,6 +33,7 @@ export function findOuts(holeCards: Card[], communityCards: Card[]): OutCard[] {
           card,
           improvementDelta: newHand.score - currentHand.score,
           newHandName: newHand.name,
+          newHandType: newHand.type,
         });
       }
     }

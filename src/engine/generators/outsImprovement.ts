@@ -1,6 +1,6 @@
 import type { Card, Suit, Rank } from '../../types/card';
 import type { Question, Option, Scenario } from '../../types/quiz';
-import { SUITS, RANKS, RANK_VALUES } from '../../types/card';
+import { SUITS, RANKS, RANK_VALUES, HandType } from '../../types/card';
 import { cardKey } from '../deck';
 import { findOuts } from '../outs';
 import { shuffle } from '../../utils/shuffle';
@@ -187,7 +187,9 @@ export function generateOutsImprovementQuestion(street: 'Flop' | 'Turn' = 'Flop'
       street,
     };
 
-    const outsCount = outs.length;
+    // Only count outs that complete a made hand (Straight or better)
+    const madeHandOuts = outs.filter(o => o.newHandType >= HandType.Straight);
+    const outsCount = madeHandOuts.length;
 
     return {
       id: crypto.randomUUID(),
