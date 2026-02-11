@@ -1,7 +1,7 @@
 import type { Card } from '../../types/card';
 import type { Question, Option, Scenario } from '../../types/quiz';
 import type { EvaluatedHand } from '../../types/card';
-import { createDeck, drawCards, cardKey } from '../deck';
+import { createDeck, drawCards } from '../deck';
 import { findTopNHands } from '../nuts';
 import { shuffle } from '../../utils/shuffle';
 
@@ -32,9 +32,8 @@ function communityCardCount(street: Street): number {
  * targetRank: 1 = best hand (nuts), 2 = second-best, 3 = third-best.
  * Shows community cards on flop, turn, or river; correct answer is the target-ranked hole cards.
  */
-export function generateNutsReadingQuestion(options?: { allowOverlap?: boolean; targetRank?: number }): Question {
+export function generateNutsReadingQuestion(options?: { targetRank?: number }): Question {
   const maxAttempts = 50;
-  const allowOverlap = options?.allowOverlap ?? false;
   const targetRank = options?.targetRank ?? 1;
   const street = pickStreet();
   const ccCount = communityCardCount(street);
@@ -52,31 +51,11 @@ export function generateNutsReadingQuestion(options?: { allowOverlap?: boolean; 
 
     const correctHand = topHands[targetRank - 1];
 
-    // Find 3 distractors from other distinct-strength hands
+    // Always use the top 4 distinct-strength hands as options
     const distractors: HandResult[] = [];
-
-    if (allowOverlap) {
-      for (let i = 0; i < topHands.length && distractors.length < 3; i++) {
-        if (i === targetRank - 1) continue;
-        distractors.push(topHands[i]);
-      }
-    } else {
-      // Strict: distractors can't share cards with community, correct answer, or each other
-      const usedKeys = new Set([...community, ...correctHand.holeCards].map(cardKey));
-
-      for (let i = 0; i < topHands.length && distractors.length < 3; i++) {
-        if (i === targetRank - 1) continue;
-        const d = topHands[i];
-        const dKeys = d.holeCards.map(cardKey);
-        const conflict = dKeys.some(k =>
-          usedKeys.has(k) ||
-          distractors.some(ad => ad.holeCards.some(c => cardKey(c) === k))
-        );
-        if (!conflict) {
-          distractors.push(d);
-          dKeys.forEach(k => usedKeys.add(k));
-        }
-      }
+    for (let i = 0; i < topHands.length && distractors.length < 3; i++) {
+      if (i === targetRank - 1) continue;
+      distractors.push(topHands[i]);
     }
 
     if (distractors.length < 3) continue;
