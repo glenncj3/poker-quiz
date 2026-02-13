@@ -4,6 +4,7 @@ import { SUITS, RANKS, RANK_VALUES, HandType } from '../../types/card';
 import { cardKey } from '../deck';
 import { findOuts } from '../outs';
 import { shuffle } from '../../utils/shuffle';
+import { suitSymbol } from '../format';
 
 type DrawType = 'flushDraw' | 'oesd' | 'gutshot';
 
@@ -211,11 +212,4 @@ function formatDrawType(type: DrawType): string {
     case 'oesd': return 'You have four cards in a row and need one on either end for a Straight';
     case 'gutshot': return 'You need one specific card in the middle to complete a Straight';
   }
-}
-
-function suitSymbol(suit: string): string {
-  const symbols: Record<string, string> = {
-    hearts: '♥', diamonds: '♦', clubs: '♣', spades: '♠',
-  };
-  return symbols[suit] || suit;
 }

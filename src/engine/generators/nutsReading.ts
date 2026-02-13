@@ -4,6 +4,7 @@ import type { EvaluatedHand } from '../../types/card';
 import { createDeck, drawCards } from '../deck';
 import { findTopNHands } from '../nuts';
 import { shuffle } from '../../utils/shuffle';
+import { formatHoleCards } from '../format';
 
 type Street = 'Flop' | 'Turn' | 'River';
 
@@ -91,15 +92,4 @@ export function generateNutsReadingQuestion(options?: { targetRank?: number }): 
   }
 
   throw new Error('Failed to generate nuts reading question after max attempts');
-}
-
-function formatHoleCards(cards: Card[]): string {
-  return cards.map(c => `${c.rank}${suitSymbol(c.suit)}`).join(' ');
-}
-
-function suitSymbol(suit: string): string {
-  const symbols: Record<string, string> = {
-    hearts: '♥', diamonds: '♦', clubs: '♣', spades: '♠',
-  };
-  return symbols[suit] || suit;
 }

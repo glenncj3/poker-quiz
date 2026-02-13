@@ -15,15 +15,17 @@ export const ACTION_LABELS: Record<ActionId, string> = {
 
 const POSITIONS: HeroPosition[] = ['UTG', 'MP', 'CO', 'BTN', 'SB', 'BB'];
 
+const POSITION_DISPLAY: Record<HeroPosition, { short: string; sentence: string }> = {
+  UTG: { short: 'early position', sentence: 'early position (UTG)' },
+  MP:  { short: 'middle position', sentence: 'middle position (MP)' },
+  CO:  { short: 'the cutoff', sentence: 'the cutoff (CO)' },
+  BTN: { short: 'the button', sentence: 'the dealer seat (BTN)' },
+  SB:  { short: 'the small blind', sentence: 'the small blind (SB)' },
+  BB:  { short: 'the big blind', sentence: 'the big blind (BB)' },
+};
+
 function positionFullName(pos: HeroPosition): string {
-  switch (pos) {
-    case 'UTG': return 'early position (UTG)';
-    case 'MP': return 'middle position (MP)';
-    case 'CO': return 'the cutoff (CO)';
-    case 'BTN': return 'the dealer seat (BTN)';
-    case 'SB': return 'the small blind (SB)';
-    case 'BB': return 'the big blind (BB)';
-  }
+  return POSITION_DISPLAY[pos].sentence;
 }
 
 function randomInt(min: number, max: number): number {
@@ -118,14 +120,7 @@ function tierName(tier: PreflopTier): string {
 }
 
 function positionGroup(pos: HeroPosition): string {
-  switch (pos) {
-    case 'UTG': return 'early position';
-    case 'MP': return 'middle position';
-    case 'CO': return 'the cutoff';
-    case 'BTN': return 'the button';
-    case 'SB': return 'the small blind';
-    case 'BB': return 'the big blind';
-  }
+  return POSITION_DISPLAY[pos].short;
 }
 
 function buildExplanation(

@@ -6,14 +6,18 @@ export function cardKey(card: Card): string {
   return `${card.rank}_${card.suit}`;
 }
 
-export function createDeck(): Card[] {
+export function createOrderedDeck(): Card[] {
   const deck: Card[] = [];
   for (const suit of SUITS) {
     for (const rank of RANKS) {
       deck.push({ suit, rank });
     }
   }
-  return shuffle(deck);
+  return deck;
+}
+
+export function createDeck(): Card[] {
+  return shuffle(createOrderedDeck());
 }
 
 export function drawCards(deck: Card[], count: number): { drawn: Card[]; remaining: Card[] } {

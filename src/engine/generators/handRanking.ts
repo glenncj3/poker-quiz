@@ -1,7 +1,7 @@
-import type { Card } from '../../types/card';
 import type { Question, Option, Scenario } from '../../types/quiz';
 import { createDeck, drawCards, cardKey } from '../deck';
 import { evaluateHand } from '../evaluator';
+import { formatHoleCards } from '../format';
 
 /**
  * Generate a hand ranking question: "Which player has the best hand?"
@@ -71,15 +71,4 @@ export function generateHandRankingQuestion(): Question {
   }
 
   throw new Error('Failed to generate hand ranking question after max attempts');
-}
-
-function formatHoleCards(cards: Card[]): string {
-  return cards.map(c => `${c.rank}${suitSymbol(c.suit)}`).join(' ');
-}
-
-function suitSymbol(suit: string): string {
-  const symbols: Record<string, string> = {
-    hearts: '♥', diamonds: '♦', clubs: '♣', spades: '♠',
-  };
-  return symbols[suit] || suit;
 }

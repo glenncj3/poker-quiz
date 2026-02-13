@@ -196,12 +196,12 @@ export function evaluate5(cards: Card[]): EvaluatedHand {
   };
 }
 
+const NUM_TO_RANK: Record<number, Rank> = Object.fromEntries(
+  Object.entries(RANK_VALUES).map(([k, v]) => [v, k])
+) as Record<number, Rank>;
+
 function numToRank(value: number): Rank {
-  const map: Record<number, Rank> = {
-    2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7', 8: '8', 9: '9',
-    10: '10', 11: 'J', 12: 'Q', 13: 'K', 14: 'A',
-  };
-  return map[value] || 'A';
+  return NUM_TO_RANK[value] ?? 'A';
 }
 
 /**

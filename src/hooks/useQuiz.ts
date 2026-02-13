@@ -5,6 +5,7 @@ import { generateNutsReadingQuestion } from '../engine/generators/nutsReading';
 import { generateOutsImprovementQuestion } from '../engine/generators/outsImprovement';
 import { generatePreflopActionQuestion } from '../engine/generators/preflopAction';
 import { PreflopTier } from '../engine/preflop';
+import { shuffle } from '../utils/shuffle';
 
 const GENERATORS: Record<Exclude<QuizCategory, 'randomMix'>, () => Question> = {
   handRanking: generateHandRankingQuestion,
@@ -27,12 +28,7 @@ function generateQuestions(category: QuizCategory, count: number = 10): Question
         questions.push(GENERATORS[cat]());
       }
     }
-    // Shuffle the mix
-    for (let i = questions.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [questions[i], questions[j]] = [questions[j], questions[i]];
-    }
-    return questions;
+    return shuffle(questions);
   }
 
   if (category === 'nutsReading') {
@@ -43,12 +39,7 @@ function generateQuestions(category: QuizCategory, count: number = 10): Question
         targetRank: targetRanks[i],
       }));
     }
-    // Shuffle so 2nd/3rd-best questions aren't always at the end
-    for (let i = questions.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [questions[i], questions[j]] = [questions[j], questions[i]];
-    }
-    return questions;
+    return shuffle(questions);
   }
 
   if (category === 'outsImprovement') {
@@ -58,12 +49,7 @@ function generateQuestions(category: QuizCategory, count: number = 10): Question
     for (let i = 0; i < 4; i++) {
       questions.push(generateOutsImprovementQuestion('Turn'));
     }
-    // Shuffle the mix
-    for (let i = questions.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [questions[i], questions[j]] = [questions[j], questions[i]];
-    }
-    return questions;
+    return shuffle(questions);
   }
 
   if (category === 'preflopAction') {
@@ -79,11 +65,7 @@ function generateQuestions(category: QuizCategory, count: number = 10): Question
     for (const tier of tierPattern) {
       questions.push(generatePreflopActionQuestion({ targetTier: tier }));
     }
-    for (let i = questions.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [questions[i], questions[j]] = [questions[j], questions[i]];
-    }
-    return questions;
+    return shuffle(questions);
   }
 
   const generator = GENERATORS[category];
