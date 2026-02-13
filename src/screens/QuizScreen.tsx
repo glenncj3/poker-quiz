@@ -1,6 +1,12 @@
 import type { Question, QuizState, Scenario } from '../types/quiz';
+import type { Card } from '../types/card';
 import { PokerTable } from '../components/PokerTable';
 import { GameInfo } from '../components/GameInfo';
+import { OptionButton } from '../components/OptionButton';
+import { Explanation } from '../components/Explanation';
+import { ProgressBar } from '../components/ProgressBar';
+import { HandRankingsButton } from '../components/HandRankingsButton';
+import { NavButton } from '../components/NavButton';
 
 function getPokerTableProps(scenario: Scenario) {
   switch (scenario.type) {
@@ -11,7 +17,7 @@ function getPokerTableProps(scenario: Scenario) {
     case 'outsImprovement':
       return { communityCards: scenario.communityCards, holeCards: scenario.holeCards };
     case 'preflopAction':
-      return { communityCards: [] as import('../types/card').Card[], holeCards: scenario.holeCards };
+      return { communityCards: [] as Card[], holeCards: scenario.holeCards };
   }
 }
 
@@ -27,10 +33,6 @@ function getGameInfoProps(scenario: Scenario) {
       return {};
   }
 }
-import { OptionButton } from '../components/OptionButton';
-import { Explanation } from '../components/Explanation';
-import { ProgressBar } from '../components/ProgressBar';
-import { HandRankingsButton } from '../components/HandRankingsButton';
 
 interface QuizScreenProps {
   state: QuizState;
@@ -60,16 +62,7 @@ export function QuizScreen({ state, question, isStreak, onSelectAnswer, onNext, 
     <div className="h-dvh bg-dark-bg p-3 animate-fade-in overflow-y-auto">
       <div className="max-w-lg mx-auto flex flex-col gap-2 min-h-full">
         <div className="flex items-center justify-between">
-          <button
-            onClick={onQuit}
-            className="bg-dark-card border border-gray-700 rounded-lg px-3 py-1 text-xs text-gray-300
-              hover:border-gold hover:bg-dark-surface hover:text-gold active:scale-[0.97]
-              transition-all duration-200 cursor-pointer
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-            aria-label="Quit quiz"
-          >
-            ← Quit
-          </button>
+          <NavButton label="← Quit" onClick={onQuit} ariaLabel="Quit quiz" />
           <div className="flex items-center gap-3">
             <span className="text-xs text-gray-400">
               {isStreak

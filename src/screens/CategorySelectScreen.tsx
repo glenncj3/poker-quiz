@@ -1,6 +1,7 @@
 import type { QuizCategory } from '../types/quiz';
 import { CategoryCard } from '../components/CategoryCard';
 import { HandRankingsButton } from '../components/HandRankingsButton';
+import { NavButton } from '../components/NavButton';
 
 interface CategorySelectScreenProps {
   onSelect: (category: QuizCategory) => void;
@@ -46,14 +47,7 @@ export function CategorySelectScreen({ onSelect, onBack, onOpenHandRankings }: C
     <div className="h-dvh bg-dark-bg p-3 sm:p-4 overflow-y-auto">
       <div className="max-w-lg mx-auto">
         <div className="flex items-center justify-between mb-3">
-          <button
-            onClick={onBack}
-            className="bg-dark-card border border-gray-700 rounded-lg px-3 py-1 text-xs text-gray-300
-              hover:border-gold hover:bg-dark-surface hover:text-gold active:scale-[0.97]
-              transition-all duration-200 cursor-pointer"
-          >
-            ← Back
-          </button>
+          <NavButton label="← Back" onClick={onBack} />
           <HandRankingsButton onClick={onOpenHandRankings} />
         </div>
 

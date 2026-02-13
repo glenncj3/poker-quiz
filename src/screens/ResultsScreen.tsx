@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ScoreRing } from '../components/ScoreRing';
 import { HandRankingsButton } from '../components/HandRankingsButton';
+import { NavButton } from '../components/NavButton';
 import type { Question, Option } from '../types/quiz';
 
 interface ResultDetail {
@@ -42,16 +43,7 @@ export function ResultsScreen({ correct, total, details, isStreak, onRetry, onCa
     <div className="h-dvh bg-dark-bg p-3 sm:p-4 animate-fade-in overflow-y-auto">
       <div className="max-w-lg mx-auto flex flex-col items-center gap-4">
         <div className="flex items-center justify-between w-full">
-          <button
-            onClick={onCategorySelect}
-            className="bg-dark-card border border-gray-700 rounded-lg px-3 py-1 text-xs text-gray-300
-              hover:border-gold hover:bg-dark-surface hover:text-gold active:scale-[0.97]
-              transition-all duration-200 cursor-pointer
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-            aria-label="Go to categories"
-          >
-            ← Categories
-          </button>
+          <NavButton label="← Categories" onClick={onCategorySelect} ariaLabel="Go to categories" />
           <h2 className="text-xl font-bold text-gold">{isStreak ? 'Game Over' : 'Quiz Complete'}</h2>
           <HandRankingsButton onClick={onOpenHandRankings} />
         </div>

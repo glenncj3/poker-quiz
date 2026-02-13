@@ -13,7 +13,7 @@ function App() {
   const [screen, setScreen] = useState<Screen>('home');
   const [lastCategory, setLastCategory] = useState<QuizCategory>('randomMix');
   const [handRankingsOpen, setHandRankingsOpen] = useState(false);
-  const { state, startQuiz, selectAnswer, nextQuestion, getCurrentQuestion, getResults } = useQuiz();
+  const { state, generationError, startQuiz, selectAnswer, nextQuestion, getCurrentQuestion, getResults } = useQuiz();
 
   const openHandRankings = useCallback(() => setHandRankingsOpen(true), []);
   const closeHandRankings = useCallback(() => setHandRankingsOpen(false), []);
@@ -23,6 +23,12 @@ function App() {
     startQuiz(category);
     setScreen('quiz');
   }, [startQuiz]);
+
+  useEffect(() => {
+    if (generationError && screen === 'quiz') {
+      setScreen('categorySelect');
+    }
+  }, [generationError, screen]);
 
   useEffect(() => {
     if (state.completed && screen === 'quiz') {

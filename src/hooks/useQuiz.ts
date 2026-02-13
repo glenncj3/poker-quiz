@@ -54,28 +54,34 @@ export function useQuiz() {
     showingExplanation: false,
     completed: false,
   });
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
   const startQuiz = useCallback((category: QuizCategory) => {
-    if (category === 'randomMix') {
+    setGenerationError(null);
+    try {
+      if (category === 'randomMix') {
+        setState({
+          category,
+          questions: [generateOneRandom()],
+          currentIndex: 0,
+          answers: {},
+          showingExplanation: false,
+          completed: false,
+        });
+        return;
+      }
+      const questions = generateQuestions(category);
       setState({
         category,
-        questions: [generateOneRandom()],
+        questions,
         currentIndex: 0,
         answers: {},
         showingExplanation: false,
         completed: false,
       });
-      return;
+    } catch {
+      setGenerationError('Failed to generate questions. Please try again.');
     }
-    const questions = generateQuestions(category);
-    setState({
-      category,
-      questions,
-      currentIndex: 0,
-      answers: {},
-      showingExplanation: false,
-      completed: false,
-    });
   }, []);
 
   const selectAnswer = useCallback((optionId: string) => {
@@ -102,13 +108,17 @@ export function useQuiz() {
           return { ...prev, completed: true, showingExplanation: false };
         }
         // Correct: generate a new random question and advance
-        const newQuestion = generateOneRandom();
-        return {
-          ...prev,
-          questions: [...prev.questions, newQuestion],
-          currentIndex: prev.currentIndex + 1,
-          showingExplanation: false,
-        };
+        try {
+          const newQuestion = generateOneRandom();
+          return {
+            ...prev,
+            questions: [...prev.questions, newQuestion],
+            currentIndex: prev.currentIndex + 1,
+            showingExplanation: false,
+          };
+        } catch {
+          return { ...prev, completed: true, showingExplanation: false };
+        }
       }
 
       const nextIndex = prev.currentIndex + 1;
@@ -143,6 +153,7 @@ export function useQuiz() {
 
   return {
     state,
+    generationError,
     startQuiz,
     selectAnswer,
     nextQuestion,
