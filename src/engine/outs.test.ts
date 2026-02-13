@@ -89,4 +89,24 @@ describe('findOuts', () => {
       expect(typeof out.newHandName).toBe('string');
     }
   });
+
+  it('ranks straight flush above flush when both are possible', () => {
+    // Hole: 7h 8h, Board: 6h 10h 2c — flush draw with straight flush potential
+    // Adding 9h → 6h-7h-8h-9h-10h = straight flush
+    // Adding Ah → Ah-10h-8h-7h-6h = ace-high flush
+    const hole = [c('7', 'hearts'), c('8', 'hearts')];
+    const community = [c('6', 'hearts'), c('10', 'hearts'), c('2', 'clubs')];
+    const outs = findOuts(hole, community);
+
+    const sf = outs.find(o => o.card.rank === '9' && o.card.suit === 'hearts');
+    const flush = outs.find(o => o.card.rank === 'A' && o.card.suit === 'hearts');
+
+    expect(sf).toBeDefined();
+    expect(flush).toBeDefined();
+    expect(sf!.newHandType).toBe(HandType.StraightFlush);
+    expect(flush!.newHandType).toBe(HandType.Flush);
+    expect(sf!.improvementDelta).toBeGreaterThan(flush!.improvementDelta);
+    // 9h should be ranked above Ah
+    expect(outs.indexOf(sf!)).toBeLessThan(outs.indexOf(flush!));
+  });
 });
