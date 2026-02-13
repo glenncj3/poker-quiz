@@ -51,6 +51,7 @@ describe('classifyPreflopHand', () => {
     expect(classifyPreflopHand([c('10', 'spades'), c('10', 'hearts')])).toBe(PreflopTier.Strong);
     expect(classifyPreflopHand([c('A', 'hearts'), c('Q', 'hearts')])).toBe(PreflopTier.Strong);
     expect(classifyPreflopHand([c('A', 'spades'), c('K', 'hearts')])).toBe(PreflopTier.Strong); // AKo
+    expect(classifyPreflopHand([c('A', 'spades'), c('Q', 'hearts')])).toBe(PreflopTier.Strong); // AQo
     expect(classifyPreflopHand([c('K', 'spades'), c('Q', 'spades')])).toBe(PreflopTier.Strong);
   });
 
@@ -59,7 +60,7 @@ describe('classifyPreflopHand', () => {
     expect(classifyPreflopHand([c('8', 'spades'), c('8', 'hearts')])).toBe(PreflopTier.UTGOpen);
     expect(classifyPreflopHand([c('A', 'hearts'), c('10', 'hearts')])).toBe(PreflopTier.UTGOpen); // ATs
     expect(classifyPreflopHand([c('J', 'diamonds'), c('10', 'diamonds')])).toBe(PreflopTier.UTGOpen); // JTs
-    expect(classifyPreflopHand([c('A', 'spades'), c('Q', 'hearts')])).toBe(PreflopTier.UTGOpen); // AQo
+    expect(classifyPreflopHand([c('A', 'spades'), c('J', 'hearts')])).toBe(PreflopTier.UTGOpen); // AJo
   });
 
   it('classifies MP open hands', () => {

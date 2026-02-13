@@ -34,12 +34,12 @@ export function handNotation(holeCards: Card[]): string {
 
 const PREMIUM = new Set(['AA', 'KK', 'QQ', 'AKs']);
 
-const STRONG = new Set(['JJ', 'TT', 'AQs', 'AJs', 'AKo', 'KQs']);
+const STRONG = new Set(['JJ', 'TT', 'AQs', 'AJs', 'AKo', 'AQo', 'KQs']);
 
 const UTG_OPEN = new Set([
   '99', '88',
   'ATs', 'KJs', 'KTs', 'QJs', 'QTs', 'JTs',
-  'AQo', 'AJo',
+  'AJo',
 ]);
 
 const MP_OPEN = new Set([
