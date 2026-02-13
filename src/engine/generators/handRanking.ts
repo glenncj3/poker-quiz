@@ -7,10 +7,11 @@ import { formatHoleCards } from '../format';
  * Generate a hand ranking question: "Which player has the best hand?"
  * Deals community cards + 4 players' hole cards, asks who wins.
  */
-export function generateHandRankingQuestion(): Question {
-  const maxAttempts = 50;
+const MAX_GENERATION_ATTEMPTS = 50;
 
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+export function generateHandRankingQuestion(): Question {
+
+  for (let attempt = 0; attempt < MAX_GENERATION_ATTEMPTS; attempt++) {
     const deck = createDeck();
     const { drawn: community, remaining: r1 } = drawCards(deck, 5);
     const { drawn: p1, remaining: r2 } = drawCards(r1, 2);
@@ -52,6 +53,7 @@ export function generateHandRankingQuestion(): Question {
     }));
 
     const scenario: Scenario = {
+      type: 'handRanking',
       communityCards: community,
       opponentHands: players,
     };

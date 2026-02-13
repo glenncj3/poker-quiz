@@ -112,26 +112,30 @@ describe('generatePreflopActionQuestion', () => {
   it('never has duplicate cards', () => {
     for (let i = 0; i < 20; i++) {
       const q = generatePreflopActionQuestion();
-      const keys = q.scenario.holeCards!.map(cardKey);
-      expect(new Set(keys).size).toBe(2);
+      expect(q.scenario.type).toBe('preflopAction');
+      if (q.scenario.type === 'preflopAction') {
+        const keys = q.scenario.holeCards.map(cardKey);
+        expect(new Set(keys).size).toBe(2);
+      }
     }
   });
 
-  it('always sets street to Preflop with no community cards', () => {
+  it('scenario has preflopAction type', () => {
     for (let i = 0; i < 20; i++) {
       const q = generatePreflopActionQuestion();
-      expect(q.scenario.street).toBe('Preflop');
-      expect(q.scenario.communityCards).toHaveLength(0);
+      expect(q.scenario.type).toBe('preflopAction');
     }
   });
 
   it('hero stack is between $30-$300 in $5 increments', () => {
     for (let i = 0; i < 50; i++) {
       const q = generatePreflopActionQuestion();
-      const stack = q.scenario.heroStack!;
-      expect(stack).toBeGreaterThanOrEqual(30);
-      expect(stack).toBeLessThanOrEqual(300);
-      expect(stack % 5).toBe(0);
+      if (q.scenario.type === 'preflopAction') {
+        const stack = q.scenario.heroStack;
+        expect(stack).toBeGreaterThanOrEqual(30);
+        expect(stack).toBeLessThanOrEqual(300);
+        expect(stack % 5).toBe(0);
+      }
     }
   });
 
@@ -139,15 +143,9 @@ describe('generatePreflopActionQuestion', () => {
     const validPositions = new Set(['UTG', 'MP', 'CO', 'BTN', 'SB', 'BB']);
     for (let i = 0; i < 50; i++) {
       const q = generatePreflopActionQuestion();
-      expect(validPositions.has(q.scenario.position!)).toBe(true);
-    }
-  });
-
-  it('has no villain-related fields in scenario', () => {
-    for (let i = 0; i < 20; i++) {
-      const q = generatePreflopActionQuestion();
-      expect(q.scenario.villainStack).toBeUndefined();
-      expect(q.scenario.betSize).toBeUndefined();
+      if (q.scenario.type === 'preflopAction') {
+        expect(validPositions.has(q.scenario.position)).toBe(true);
+      }
     }
   });
 
@@ -155,14 +153,16 @@ describe('generatePreflopActionQuestion', () => {
     for (let i = 0; i < 20; i++) {
       const q = generatePreflopActionQuestion();
       const labels = new Set(q.options.map(o => o.label));
-      const isBB = q.scenario.position === 'BB';
-      const expected = new Set([
-        ACTION_LABELS.betSmall,
-        ACTION_LABELS.betBig,
-        isBB ? 'Check' : ACTION_LABELS.call,
-        ACTION_LABELS.fold,
-      ]);
-      expect(labels).toEqual(expected);
+      if (q.scenario.type === 'preflopAction') {
+        const isBB = q.scenario.position === 'BB';
+        const expected = new Set([
+          ACTION_LABELS.betSmall,
+          ACTION_LABELS.betBig,
+          isBB ? 'Check' : ACTION_LABELS.call,
+          ACTION_LABELS.fold,
+        ]);
+        expect(labels).toEqual(expected);
+      }
     }
   });
 
@@ -176,8 +176,10 @@ describe('generatePreflopActionQuestion', () => {
   it('question text includes position and stack', () => {
     for (let i = 0; i < 20; i++) {
       const q = generatePreflopActionQuestion();
-      expect(q.questionText).toContain(q.scenario.position!);
-      expect(q.questionText).toContain(`$${q.scenario.heroStack}`);
+      if (q.scenario.type === 'preflopAction') {
+        expect(q.questionText).toContain(q.scenario.position);
+        expect(q.questionText).toContain(`$${q.scenario.heroStack}`);
+      }
     }
   });
 
@@ -194,8 +196,10 @@ describe('generatePreflopActionQuestion', () => {
     for (const tier of tiers) {
       for (let i = 0; i < 5; i++) {
         const q = generatePreflopActionQuestion({ targetTier: tier });
-        const actual = classifyPreflopHand(q.scenario.holeCards!);
-        expect(actual).toBe(tier);
+        if (q.scenario.type === 'preflopAction') {
+          const actual = classifyPreflopHand(q.scenario.holeCards);
+          expect(actual).toBe(tier);
+        }
       }
     }
   });

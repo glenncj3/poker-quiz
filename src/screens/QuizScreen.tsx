@@ -1,6 +1,32 @@
-import type { Question, QuizState } from '../types/quiz';
+import type { Question, QuizState, Scenario } from '../types/quiz';
 import { PokerTable } from '../components/PokerTable';
 import { GameInfo } from '../components/GameInfo';
+
+function getPokerTableProps(scenario: Scenario) {
+  switch (scenario.type) {
+    case 'handRanking':
+      return { communityCards: scenario.communityCards, opponentHands: scenario.opponentHands };
+    case 'nutsReading':
+      return { communityCards: scenario.communityCards };
+    case 'outsImprovement':
+      return { communityCards: scenario.communityCards, holeCards: scenario.holeCards };
+    case 'preflopAction':
+      return { communityCards: [] as import('../types/card').Card[], holeCards: scenario.holeCards };
+  }
+}
+
+function getGameInfoProps(scenario: Scenario) {
+  switch (scenario.type) {
+    case 'nutsReading':
+      return { street: scenario.street };
+    case 'outsImprovement':
+      return { street: scenario.street };
+    case 'preflopAction':
+      return { position: scenario.position, street: 'Preflop', heroStack: scenario.heroStack };
+    default:
+      return {};
+  }
+}
 import { OptionButton } from '../components/OptionButton';
 import { Explanation } from '../components/Explanation';
 import { ProgressBar } from '../components/ProgressBar';
@@ -58,20 +84,9 @@ export function QuizScreen({ state, question, isStreak, onSelectAnswer, onNext, 
 
         {/* Key forces re-mount + animation on question change */}
         <div key={question.id} className="flex flex-col gap-2 animate-scale-in flex-1">
-          <PokerTable
-            communityCards={question.scenario.communityCards}
-            holeCards={question.scenario.holeCards}
-            opponentHands={question.scenario.opponentHands}
-          />
+          <PokerTable {...getPokerTableProps(question.scenario)} />
 
-          <GameInfo
-            potSize={question.scenario.potSize}
-            betSize={question.scenario.betSize}
-            position={question.scenario.position}
-            street={question.scenario.street}
-            heroStack={question.scenario.heroStack}
-            villainStack={question.scenario.villainStack}
-          />
+          <GameInfo {...getGameInfoProps(question.scenario)} />
 
           <p className="text-sm font-semibold text-center text-gray-100">
             {question.questionText}

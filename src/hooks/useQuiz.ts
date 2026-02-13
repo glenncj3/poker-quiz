@@ -6,6 +6,9 @@ import { generateOutsImprovementQuestion, generateOutsImprovementSet } from '../
 import { generatePreflopActionQuestion, generatePreflopActionSet } from '../engine/generators/preflopAction';
 import { shuffle } from '../utils/shuffle';
 
+const DEFAULT_QUESTION_COUNT = 10;
+const RANDOM_MIX_PER_CATEGORY = 2;
+
 const SINGLE_GENERATORS: Record<Exclude<QuizCategory, 'randomMix'>, () => Question> = {
   handRanking: generateHandRankingQuestion,
   nutsReading: generateNutsReadingQuestion,
@@ -24,11 +27,11 @@ const CATEGORIES: Exclude<QuizCategory, 'randomMix'>[] = [
   'handRanking', 'nutsReading', 'outsImprovement', 'preflopAction',
 ];
 
-function generateQuestions(category: QuizCategory, count: number = 10): Question[] {
+function generateQuestions(category: QuizCategory, count: number = DEFAULT_QUESTION_COUNT): Question[] {
   if (category === 'randomMix') {
     const questions: Question[] = [];
     for (const cat of CATEGORIES) {
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < RANDOM_MIX_PER_CATEGORY; i++) {
         questions.push(SINGLE_GENERATORS[cat]());
       }
     }

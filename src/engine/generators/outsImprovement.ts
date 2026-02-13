@@ -134,10 +134,11 @@ function constructDrawScenario(street: 'Flop' | 'Turn'): DrawSetup {
 /**
  * Generate an outs/improvement question: "Which card improves your hand the most?"
  */
-export function generateOutsImprovementQuestion(street: 'Flop' | 'Turn' = 'Flop'): Question {
-  const maxAttempts = 50;
+const MAX_GENERATION_ATTEMPTS = 50;
 
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+export function generateOutsImprovementQuestion(street: 'Flop' | 'Turn' = 'Flop'): Question {
+
+  for (let attempt = 0; attempt < MAX_GENERATION_ATTEMPTS; attempt++) {
     const setup = constructDrawScenario(street);
     const { holeCards, communityCards } = setup;
 
@@ -183,6 +184,7 @@ export function generateOutsImprovementQuestion(street: 'Flop' | 'Turn' = 'Flop'
     ];
 
     const scenario: Scenario = {
+      type: 'outsImprovement',
       communityCards,
       holeCards,
       street,

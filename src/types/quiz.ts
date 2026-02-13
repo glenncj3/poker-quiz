@@ -15,17 +15,11 @@ export interface Option {
   disabled?: boolean;
 }
 
-export interface Scenario {
-  communityCards: Card[];
-  holeCards?: Card[];
-  opponentHands?: Card[][];
-  potSize?: number;
-  betSize?: number;
-  position?: string;
-  street?: string;
-  heroStack?: number;
-  villainStack?: number;
-}
+export type Scenario =
+  | { type: 'handRanking'; communityCards: Card[]; opponentHands: Card[][] }
+  | { type: 'nutsReading'; communityCards: Card[]; street: string }
+  | { type: 'outsImprovement'; communityCards: Card[]; holeCards: Card[]; street: string }
+  | { type: 'preflopAction'; holeCards: Card[]; position: string; heroStack: number };
 
 export interface Question {
   id: string;

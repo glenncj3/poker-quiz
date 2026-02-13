@@ -161,11 +161,12 @@ function buildExplanation(
 
 // ── Main generator ──
 
+const MAX_GENERATION_ATTEMPTS = 500;
+
 export function generatePreflopActionQuestion(options?: { targetTier?: PreflopTier }): Question {
   const targetTier = options?.targetTier;
-  const maxAttempts = 500;
 
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+  for (let attempt = 0; attempt < MAX_GENERATION_ATTEMPTS; attempt++) {
     const deck = createDeck();
     const { drawn: holeCards } = drawCards(deck, 2);
 
@@ -190,10 +191,9 @@ export function generatePreflopActionQuestion(options?: { targetTier?: PreflopTi
     ];
 
     const scenario: Scenario = {
-      communityCards: [],
+      type: 'preflopAction',
       holeCards,
       position: pos,
-      street: 'Preflop',
       heroStack: stack,
     };
 

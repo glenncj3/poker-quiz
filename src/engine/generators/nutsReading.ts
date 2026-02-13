@@ -33,13 +33,15 @@ function communityCardCount(street: Street): number {
  * targetRank: 1 = best hand (nuts), 2 = second-best, 3 = third-best.
  * Shows community cards on flop, turn, or river; correct answer is the target-ranked hole cards.
  */
+const MAX_GENERATION_ATTEMPTS = 50;
+const NUTS_TOP_N = 16;
+
 export function generateNutsReadingQuestion(options?: { targetRank?: number }): Question {
-  const maxAttempts = 50;
   const targetRank = options?.targetRank ?? 1;
   const street = pickStreet();
   const ccCount = communityCardCount(street);
 
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+  for (let attempt = 0; attempt < MAX_GENERATION_ATTEMPTS; attempt++) {
     const deck = createDeck();
     const { drawn: community } = drawCards(deck, ccCount);
 
@@ -47,7 +49,7 @@ export function generateNutsReadingQuestion(options?: { targetRank?: number }): 
     const ranks = community.map(c => c.rank);
     if (new Set(ranks).size !== ranks.length) continue;
 
-    const topHands = findTopNHands(community, 16);
+    const topHands = findTopNHands(community, NUTS_TOP_N);
     if (topHands.length < targetRank + 3) continue;
 
     const correctHand = topHands[targetRank - 1];
@@ -83,7 +85,7 @@ export function generateNutsReadingQuestion(options?: { targetRank?: number }): 
       id: crypto.randomUUID(),
       category: 'nutsReading',
       questionText: `Which two cards make the ${rankLabel} possible hand ${streetPhrase}?`,
-      scenario: { communityCards: community, street } as Scenario,
+      scenario: { type: 'nutsReading', communityCards: community, street } as Scenario,
       options: shuffle(opts),
       explanation: targetRank === 1
         ? `The best possible hand ${streetPhrase} is ${formatHoleCards(correctHand.holeCards)}, making ${correctHand.hand.name}.`
