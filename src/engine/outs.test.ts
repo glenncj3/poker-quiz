@@ -44,8 +44,8 @@ describe('findOuts', () => {
     }
   });
 
-  it('returns empty array when hand cannot improve in type', () => {
-    // Hole: A♠ A♥, Board: A♦ A♣ K♠ K♥ Q♦ — quad aces, nothing improves the hand type
+  it('returns empty array when hand cannot improve', () => {
+    // Hole: A♠ A♥, Board: A♦ A♣ K♠ K♥ Q♦ — quad aces with K kicker, no card improves the score
     const hole = [c('A', 'spades'), c('A', 'hearts')];
     const community = [c('A', 'diamonds'), c('A', 'clubs'), c('K', 'spades'), c('K', 'hearts'), c('Q', 'diamonds')];
     const outs = findOuts(hole, community);
