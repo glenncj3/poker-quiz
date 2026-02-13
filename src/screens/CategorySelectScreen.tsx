@@ -74,14 +74,16 @@ export function CategorySelectScreen({ onSelect, onBack, onOpenHandRankings }: C
           ))}
         </div>
 
-        <div className="flex justify-center mt-2">
-          <CategoryCard
-            category={CATEGORY_INFO[4].category}
-            title={CATEGORY_INFO[4].title}
-            description={CATEGORY_INFO[4].description}
-            icon={CATEGORY_INFO[4].icon}
-            onClick={() => onSelect(CATEGORY_INFO[4].category)}
-          />
+        <div className="grid grid-cols-2 gap-2 mt-2">
+          <div className="col-start-1 col-end-3 mx-auto w-[calc(50%-0.25rem)]">
+            <CategoryCard
+              category={CATEGORY_INFO[4].category}
+              title={CATEGORY_INFO[4].title}
+              description={CATEGORY_INFO[4].description}
+              icon={CATEGORY_INFO[4].icon}
+              onClick={() => onSelect(CATEGORY_INFO[4].category)}
+            />
+          </div>
         </div>
       </div>
     </div>

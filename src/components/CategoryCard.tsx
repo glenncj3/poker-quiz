@@ -12,7 +12,7 @@ export function CategoryCard({ title, description, icon, onClick }: CategoryCard
   return (
     <button
       onClick={onClick}
-      className="bg-dark-card border-2 border-gray-700 rounded-xl p-3 text-left
+      className="w-full bg-dark-card border-2 border-gray-700 rounded-xl p-3 text-left
         hover:border-gold hover:bg-dark-surface active:scale-[0.98]
         transition-all duration-200 cursor-pointer group"
     >
