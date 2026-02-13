@@ -4,6 +4,7 @@ import { generateNutsReadingQuestion } from './nutsReading';
 import { generateOutsImprovementQuestion } from './outsImprovement';
 import { generatePreflopActionQuestion } from './preflopAction';
 import { cardKey } from '../deck';
+import { evaluateHand } from '../evaluator';
 import type { Question } from '../../types/quiz';
 
 const VALID_STREETS = ['Preflop', 'Flop', 'Turn', 'River'];
@@ -57,6 +58,17 @@ describe('generateHandRankingQuestion', () => {
       expect(q.category).toBe('handRanking');
       expect(q.scenario.communityCards).toHaveLength(5);
       expect(q.scenario.opponentHands).toHaveLength(4);
+    }
+  });
+
+  it('all 4 players have distinct hand strengths (no ties)', () => {
+    for (let i = 0; i < 20; i++) {
+      const q = generateHandRankingQuestion();
+      const hands = q.scenario.opponentHands!;
+      const community = q.scenario.communityCards;
+      const scores = hands.map(hole => evaluateHand(hole, community).score);
+      const uniqueScores = new Set(scores);
+      expect(uniqueScores.size).toBe(4);
     }
   });
 });

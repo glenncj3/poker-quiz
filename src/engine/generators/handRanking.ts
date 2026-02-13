@@ -25,6 +25,10 @@ export function generateHandRankingQuestion(): Question {
     const types = new Set(hands.map(h => h.type));
     if (types.size < 2) continue;
 
+    // Ensure all 4 players have distinct hand strengths (no ties)
+    const scores = new Set(hands.map(h => h.score));
+    if (scores.size < 4) continue;
+
     // Find the winner
     let bestIdx = 0;
     for (let i = 1; i < hands.length; i++) {
