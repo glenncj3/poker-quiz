@@ -1,5 +1,5 @@
 import type { Card } from '../../types/card';
-import type { Question, Option, Scenario } from '../../types/quiz';
+import type { Question, Option, Scenario, GeneratorConfig } from '../../types/quiz';
 import type { EvaluatedHand } from '../../types/card';
 import { createDeck, drawCards } from '../deck';
 import { findTopNHands } from '../nuts';
@@ -92,4 +92,16 @@ export function generateNutsReadingQuestion(options?: { targetRank?: number }): 
   }
 
   throw new Error('Failed to generate nuts reading question after max attempts');
+}
+
+export function generateNutsReadingSet({ count }: GeneratorConfig): Question[] {
+  // 60% best, 20% second-best, 20% third-best
+  const best = Math.ceil(count * 0.6);
+  const second = Math.ceil(count * 0.2);
+  const third = count - best - second;
+  const questions: Question[] = [];
+  for (let i = 0; i < best; i++) questions.push(generateNutsReadingQuestion({ targetRank: 1 }));
+  for (let i = 0; i < second; i++) questions.push(generateNutsReadingQuestion({ targetRank: 2 }));
+  for (let i = 0; i < third; i++) questions.push(generateNutsReadingQuestion({ targetRank: 3 }));
+  return shuffle(questions);
 }

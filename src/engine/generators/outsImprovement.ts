@@ -1,5 +1,5 @@
 import type { Card, Suit, Rank } from '../../types/card';
-import type { Question, Option, Scenario } from '../../types/quiz';
+import type { Question, Option, Scenario, GeneratorConfig } from '../../types/quiz';
 import { SUITS, RANKS, RANK_VALUES, HandType } from '../../types/card';
 import { cardKey } from '../deck';
 import { findOuts } from '../outs';
@@ -204,6 +204,16 @@ export function generateOutsImprovementQuestion(street: 'Flop' | 'Turn' = 'Flop'
   }
 
   throw new Error('Failed to generate outs improvement question after max attempts');
+}
+
+export function generateOutsImprovementSet({ count }: GeneratorConfig): Question[] {
+  // 60% flop, 40% turn
+  const flopCount = Math.ceil(count * 0.6);
+  const turnCount = count - flopCount;
+  const questions: Question[] = [];
+  for (let i = 0; i < flopCount; i++) questions.push(generateOutsImprovementQuestion('Flop'));
+  for (let i = 0; i < turnCount; i++) questions.push(generateOutsImprovementQuestion('Turn'));
+  return shuffle(questions);
 }
 
 function formatDrawType(type: DrawType): string {

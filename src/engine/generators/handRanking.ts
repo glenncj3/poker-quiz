@@ -1,4 +1,4 @@
-import type { Question, Option, Scenario } from '../../types/quiz';
+import type { Question, Option, Scenario, GeneratorConfig } from '../../types/quiz';
 import { createDeck, drawCards, cardKey } from '../deck';
 import { evaluateHand } from '../evaluator';
 import { formatHoleCards } from '../format';
@@ -71,4 +71,12 @@ export function generateHandRankingQuestion(): Question {
   }
 
   throw new Error('Failed to generate hand ranking question after max attempts');
+}
+
+export function generateHandRankingSet({ count }: GeneratorConfig): Question[] {
+  const questions: Question[] = [];
+  for (let i = 0; i < count; i++) {
+    questions.push(generateHandRankingQuestion());
+  }
+  return questions;
 }

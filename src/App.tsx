@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { QuizCategory } from './types/quiz';
 import { useQuiz } from './hooks/useQuiz';
 import { HomeScreen } from './screens/HomeScreen';
@@ -24,25 +24,15 @@ function App() {
     setScreen('quiz');
   }, [startQuiz]);
 
-  const handleNext = useCallback(() => {
-    if (lastCategory === 'randomMix') {
-      const currentQ = state.questions[state.currentIndex];
-      const selectedId = currentQ ? state.answers[currentQ.id] : undefined;
-      const wasCorrect = currentQ?.options.find(o => o.id === selectedId)?.isCorrect ?? false;
-      nextQuestion();
-      if (!wasCorrect) {
-        setScreen('results');
-      }
-      return;
-    }
-
-    if (state.currentIndex >= state.questions.length - 1) {
-      nextQuestion();
+  useEffect(() => {
+    if (state.completed && screen === 'quiz') {
       setScreen('results');
-    } else {
-      nextQuestion();
     }
-  }, [nextQuestion, state.currentIndex, state.questions, state.answers, lastCategory]);
+  }, [state.completed, screen]);
+
+  const handleNext = useCallback(() => {
+    nextQuestion();
+  }, [nextQuestion]);
 
   const handleRetry = useCallback(() => {
     startQuiz(lastCategory);

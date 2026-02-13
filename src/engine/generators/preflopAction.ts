@@ -1,4 +1,4 @@
-import type { Question, Option, Scenario } from '../../types/quiz';
+import type { Question, Option, Scenario, GeneratorConfig } from '../../types/quiz';
 import { createDeck, drawCards, cardKey } from '../deck';
 import { shuffle } from '../../utils/shuffle';
 import { classifyPreflopHand, handNotation, PreflopTier } from '../preflop';
@@ -211,4 +211,22 @@ export function generatePreflopActionQuestion(options?: { targetTier?: PreflopTi
   }
 
   throw new Error('Failed to generate preflop action question after max attempts');
+}
+
+export function generatePreflopActionSet({ count }: GeneratorConfig): Question[] {
+  // Tier frequency: 1×Trash, 2×Steal, 2×LPOpen, 2×MPOpen, 2×UTGOpen, 1×Strong (per 10)
+  const tierPattern: PreflopTier[] = [
+    PreflopTier.Trash,
+    PreflopTier.Steal, PreflopTier.Steal,
+    PreflopTier.LPOpen, PreflopTier.LPOpen,
+    PreflopTier.MPOpen, PreflopTier.MPOpen,
+    PreflopTier.UTGOpen, PreflopTier.UTGOpen,
+    PreflopTier.Strong,
+  ];
+  const questions: Question[] = [];
+  for (let i = 0; i < count; i++) {
+    const tier = tierPattern[i % tierPattern.length];
+    questions.push(generatePreflopActionQuestion({ targetTier: tier }));
+  }
+  return shuffle(questions);
 }

@@ -1,17 +1,23 @@
 import { useState, useCallback } from 'react';
-import type { QuizCategory, Question, QuizState } from '../types/quiz';
-import { generateHandRankingQuestion } from '../engine/generators/handRanking';
-import { generateNutsReadingQuestion } from '../engine/generators/nutsReading';
-import { generateOutsImprovementQuestion } from '../engine/generators/outsImprovement';
-import { generatePreflopActionQuestion } from '../engine/generators/preflopAction';
-import { PreflopTier } from '../engine/preflop';
+import type { QuizCategory, Question, QuizState, QuestionGenerator } from '../types/quiz';
+import { generateHandRankingQuestion, generateHandRankingSet } from '../engine/generators/handRanking';
+import { generateNutsReadingQuestion, generateNutsReadingSet } from '../engine/generators/nutsReading';
+import { generateOutsImprovementQuestion, generateOutsImprovementSet } from '../engine/generators/outsImprovement';
+import { generatePreflopActionQuestion, generatePreflopActionSet } from '../engine/generators/preflopAction';
 import { shuffle } from '../utils/shuffle';
 
-const GENERATORS: Record<Exclude<QuizCategory, 'randomMix'>, () => Question> = {
+const SINGLE_GENERATORS: Record<Exclude<QuizCategory, 'randomMix'>, () => Question> = {
   handRanking: generateHandRankingQuestion,
   nutsReading: generateNutsReadingQuestion,
   outsImprovement: generateOutsImprovementQuestion,
   preflopAction: generatePreflopActionQuestion,
+};
+
+const SET_GENERATORS: Record<Exclude<QuizCategory, 'randomMix'>, QuestionGenerator> = {
+  handRanking: generateHandRankingSet,
+  nutsReading: generateNutsReadingSet,
+  outsImprovement: generateOutsImprovementSet,
+  preflopAction: generatePreflopActionSet,
 };
 
 const CATEGORIES: Exclude<QuizCategory, 'randomMix'>[] = [
@@ -19,65 +25,21 @@ const CATEGORIES: Exclude<QuizCategory, 'randomMix'>[] = [
 ];
 
 function generateQuestions(category: QuizCategory, count: number = 10): Question[] {
-  const questions: Question[] = [];
-
   if (category === 'randomMix') {
-    // 2 questions per category
+    const questions: Question[] = [];
     for (const cat of CATEGORIES) {
       for (let i = 0; i < 2; i++) {
-        questions.push(GENERATORS[cat]());
+        questions.push(SINGLE_GENERATORS[cat]());
       }
     }
     return shuffle(questions);
   }
-
-  if (category === 'nutsReading') {
-    // 6 best hand, 2 second-best, 2 third-best
-    const targetRanks = [1, 1, 1, 1, 1, 1, 2, 2, 3, 3];
-    for (let i = 0; i < targetRanks.length; i++) {
-      questions.push(generateNutsReadingQuestion({
-        targetRank: targetRanks[i],
-      }));
-    }
-    return shuffle(questions);
-  }
-
-  if (category === 'outsImprovement') {
-    for (let i = 0; i < 6; i++) {
-      questions.push(generateOutsImprovementQuestion('Flop'));
-    }
-    for (let i = 0; i < 4; i++) {
-      questions.push(generateOutsImprovementQuestion('Turn'));
-    }
-    return shuffle(questions);
-  }
-
-  if (category === 'preflopAction') {
-    // Tier frequency: 1×Trash, 2×Steal, 2×LPOpen, 2×MPOpen, 2×UTGOpen, 1×Strong
-    const tierPattern: PreflopTier[] = [
-      PreflopTier.Trash,
-      PreflopTier.Steal, PreflopTier.Steal,
-      PreflopTier.LPOpen, PreflopTier.LPOpen,
-      PreflopTier.MPOpen, PreflopTier.MPOpen,
-      PreflopTier.UTGOpen, PreflopTier.UTGOpen,
-      PreflopTier.Strong,
-    ];
-    for (const tier of tierPattern) {
-      questions.push(generatePreflopActionQuestion({ targetTier: tier }));
-    }
-    return shuffle(questions);
-  }
-
-  const generator = GENERATORS[category];
-  for (let i = 0; i < count; i++) {
-    questions.push(generator());
-  }
-  return questions;
+  return SET_GENERATORS[category]({ count });
 }
 
 function generateOneRandom(): Question {
   const cat = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
-  return GENERATORS[cat]();
+  return SINGLE_GENERATORS[cat]();
 }
 
 export function useQuiz() {

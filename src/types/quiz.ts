@@ -36,6 +36,12 @@ export interface Question {
   explanation: string;
 }
 
+export interface GeneratorConfig {
+  count: number;
+}
+
+export type QuestionGenerator = (config: GeneratorConfig) => Question[];
+
 export interface QuizState {
   category: QuizCategory;
   questions: Question[];
